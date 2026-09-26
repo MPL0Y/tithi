@@ -9,15 +9,25 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="Tithi">
-<title>Tithi</title>
+<title>Tithi · Today’s panchang, tithi and Rahu kalam</title>
+<meta name="description" content="Today’s tithi, nakshatra, Rahu kalam and festival dates for your city. Worked out in your browser, no ads.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tithi.agenticrabbit.com/">
+<meta property="og:title" content="Tithi · Today’s panchang">
+<meta property="og:description" content="Today’s tithi, nakshatra, Rahu kalam and festival dates for your city. Worked out in your browser, no ads.">
+<meta property="og:image" content="https://tithi.agenticrabbit.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A moon beside the word Tithi: today’s panchang, for your city.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
 <script>try { const t = JSON.parse(localStorage.getItem('theme')); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
 <style>
   :root {
-    --paper: #f2ede4; --recess: #ebe5da; --ink: #1c1b19; --ink2: #5b574f; --muted: #948e83; --rule: #d8d1c4;
-    --sindoor: #c43d2b; --lit: #f2ede4; --unlit: #1c1b19;
+    --paper: #f2ede4; --recess: #ebe5da; --ink: #1c1b19; --ink2: #5b574f; --muted: #6f695f; --rule: #d8d1c4;
+    --sindoor: #b23624; --lit: #f2ede4; --unlit: #1c1b19;
     --serif: "Instrument Serif", "Tiro Devanagari Hindi", Georgia, serif;
     --sans: "Instrument Sans", system-ui, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -25,11 +35,11 @@
   }
   /* dark: follows the system unless the theme switch says otherwise */
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme=light]) { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #80796e; --rule: #34312c;
+    :root:not([data-theme=light]) { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #948e83; --rule: #34312c;
       --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; color-scheme: dark; }
     :root:not([data-theme=light]) body::before { mix-blend-mode: screen; opacity: 0.12; }
   }
-  :root[data-theme=dark] { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #80796e; --rule: #34312c;
+  :root[data-theme=dark] { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #948e83; --rule: #34312c;
     --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; color-scheme: dark; }
   :root[data-theme=dark] body::before { mix-blend-mode: screen; opacity: 0.12; }
   * { box-sizing: border-box; margin: 0; }
@@ -57,8 +67,10 @@
   .fest li { font-family: var(--serif); font-size: 1.25rem; line-height: 1.2; padding-left: 1.125rem; position: relative; }
   .fest li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: var(--sindoor); }
 
-  .controls { margin-top: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule); display: grid; gap: 0.75rem; }
-  .controls .line { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .controls { margin-top: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); display: grid; }
+  .controls .line { display: flex; align-items: center; gap: 0 1rem; flex-wrap: wrap; }
+  /* 44px tap targets */
+  .controls button, .colophon button, #city { min-height: 44px; }
   button, select, input { font: inherit; font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); background: none; border: 0; padding: 0.25rem 0; cursor: pointer; }
   select, input { border-bottom: 1px solid var(--ink); border-radius: 0; appearance: none; }
   input[type=date] { text-transform: none; }
@@ -95,6 +107,7 @@
 
   svg.chart { display: block; width: 100%; height: auto; overflow: visible; }
   svg.chart text { font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; fill: var(--ink2); }
+  svg.chart text.r { font-size: 7px; }
   .caption { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
   .caption div { display: grid; }
   .caption b { font-family: var(--serif); font-weight: 400; font-size: 1.625rem; line-height: 1.1; }
@@ -144,19 +157,20 @@
   .note b { display: block; font: 400 1.5rem/1.1 var(--serif); margin-bottom: 0.5rem; }
   .chap > .sub { color: var(--ink2); margin: -0.75rem 0 0.5rem; max-width: 34rem; }
   .chap h3 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.375rem; margin: 1.5rem 0 0.5rem; }
-  .dayno { display: block; padding: 0; color: inherit; }
+  .dayno { display: block; padding: 0; color: inherit; text-align: left; }
   .sr { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
   #out.still > * { animation: none; }
   .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; margin-top: 1rem; font-size: 0.8125rem; color: var(--ink2); }
   .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
   .legend i { font-family: var(--serif); font-size: 1rem; color: var(--sindoor); }
   .legend .ring, .legend .shade { width: 1rem; height: 1rem; }
+  .legend .dot { display: none; width: 5px; height: 5px; border-radius: 50%; background: var(--sindoor); }
   .legend .ring { border: 1px solid var(--sindoor); border-radius: 50%; }
   .legend .shade { background: var(--recess); }
   .more { margin-top: 1.25rem; }
   .more a { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--ink); padding-bottom: 0.125rem; }
   .more a:hover { color: var(--sindoor); border-color: var(--sindoor); }
-  .colophon { margin-top: 5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; }
+  .colophon { margin-top: 5rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 0 1.75rem; }
   .note.wide { margin: auto; width: min(40rem, calc(100vw - 2rem)); max-height: 85vh; overflow: auto; }
   .note.wide h3 { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; margin: 1.25rem 0 0.25rem; }
   .note.wide p + p { margin-top: 0.5rem; }
@@ -178,6 +192,8 @@
     /* on Today the summary sentence already says this */
     [data-view=today] .folio :is(.tithi, .sub, .fest) { display: none; }
     [data-view=today] .brief { margin-top: 0; }
+    /* the month and year views carry their own date */
+    :is([data-view=calendar], [data-view=festivals]) .folio-body { display: none; }
   }
   @media (max-width: 600px) {
     .page { padding-left: 1rem; padding-right: 1rem; }
@@ -193,7 +209,14 @@
     .cal a { min-height: 4.25rem; padding: 0.375rem 0.25rem; }
     .cal .n { font-size: 1.375rem; }
     .cal .f, .cal .tt { display: none; }
-    .cal svg { top: auto; bottom: 0.5rem; right: 0.25rem; }
+    .cal svg { position: static; order: 1; margin-top: 0.25rem; }
+    .cal a.fe .n::before { content: ""; position: absolute; right: -0.5rem; top: 0.1em; width: 5px; height: 5px; border-radius: 50%; background: var(--sindoor); }
+    .legend i { display: none; }
+    .legend .dot { display: block; }
+    nav a { min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    nav { padding-top: 0; padding-bottom: env(safe-area-inset-bottom); }
+    svg.chart text { font-size: 15px; }
+    svg.chart text.r { font-size: 12px; }
     .ledger > a, .ledger > div, .ledger.times > div { grid-template-columns: 3.5rem 1fr; }
     .ledger .q, .ledger .time { grid-column: 2; }
   }
@@ -204,8 +227,8 @@
   <aside class="folio">
     <a class="mark" id="home" href="#today">Tithi <span>a panchang</span></a>
     <div class="controls">
-      <div class="line"><button id="prev">← Prev</button><button id="today">Today</button><button id="next">Next →</button></div>
-      <div class="line"><input id="city" list="places" aria-label="City" autocomplete="off" spellcheck="false"><datalist id="places"></datalist><button id="locate">Locate me</button></div>
+      <div class="line"><button id="prev">← Prev</button><button id="today">Today</button><button id="next">Next →</button><button id="pickdate">Pick date</button></div>
+      <div class="line"><input id="city" list="places" aria-label="City" autocomplete="off" spellcheck="false"><datalist id="places"></datalist><button id="locate">Locate me</button><button id="lang"></button></div>
     </div>
     <input type="date" id="date" class="sr" tabindex="-1" aria-hidden="true">
     <div class="folio-body" id="folio"></div>
@@ -214,8 +237,9 @@
     <nav id="nav" aria-label="Views">
       <a data-v="today"><sup>I</sup>Today</a><a data-v="calendar"><sup>II</sup>Calendar</a><a data-v="festivals"><sup>III</sup>Festivals</a>
     </nav>
-    <div id="out" aria-live="polite"></div>
-    <footer class="colophon"><button id="lang"></button><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button></footer>
+    <div id="out"></div>
+    <p id="say" class="sr" aria-live="polite"></p>
+    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button></footer>
     <div popover id="method" class="note wide">
       <b>How this is worked out</b>
       <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables.</p>
@@ -390,7 +414,7 @@ function moonRoad(p) {
   let s = `<svg class="chart" viewBox="0 0 ${W} 120" role="img" aria-label="Moon at ${deg(p.moonLon)} ${esc(p.moonRashi[0].name)}, sun in ${esc(p.sunRashi)}">
     <line x1="10" y1="60" x2="${W - 10}" y2="60" stroke="var(--ink)" stroke-width="0.75"/>`;
   Panchang.RASHI.forEach((n, i) => {
-    s += `<line x1="${X(i * 30)}" y1="30" x2="${X(i * 30)}" y2="60" stroke="var(--rule)"/><text x="${X(i * 30 + 15)}" y="40" text-anchor="middle" style="font-size:7px">${n.slice(0, 4).toUpperCase()}</text>`;
+    s += `<line x1="${X(i * 30)}" y1="30" x2="${X(i * 30)}" y2="60" stroke="var(--rule)"/><text x="${X(i * 30 + 15)}" y="40" text-anchor="middle" class="r">${n.slice(0, 4).toUpperCase()}</text>`;
   });
   for (let k = 0; k <= 27; k++) s += `<line x1="${X(k * 360 / 27)}" y1="60" x2="${X(k * 360 / 27)}" y2="${k % 9 ? 66 : 72}" stroke="var(--ink)" stroke-width="0.75"/>`;
   const mx = X(p.moonLon), sx = X(p.sunLon);
@@ -517,14 +541,14 @@ const views = {
     const blank = new Date(Date.UTC(sel.y, sel.m, 1)).getUTCDay();
     const cells = days.map(b => {
       const f = b.fest.find(x => !ROUTINE.includes(x)) || b.fest[0] || '';
-      const cls = [b.d === sel.d && 'sel', iso(b) === today && 'today'].filter(Boolean).join(' ');
+      const cls = [b.d === sel.d && 'sel', iso(b) === today && 'today', f && 'fe'].filter(Boolean).join(' ');
       return `<a href="${url('calendar', b)}" class="${cls}" aria-label="${b.d} ${MONTHS[b.m]}, ${b.paksha} ${b.tithiName}${f ? ', ' + esc(f) : ''}">
         ${moon(b.tithi * 12 + 6, 12)}<span class="n">${b.d}</span><span class="tt">${b.paksha[0]} · ${esc(b.tithiName)}</span><span class="f">${esc(f)}</span></a>`;
     }).join('');
     const list = days.filter(b => b.fest.length).map(b => `<a href="${url('today', b)}"><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${b.fest.map(esc).join(', ')}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('');
     return `<h1 class="title">${MONTHS[sel.m]} <em>${sel.y}</em></h1><p>Tithi at sunrise in ${esc(loc.name)}.</p>
       <section class="chap"><div class="cal">${WD.map(w => `<span class="wd label">${w}</span>`).join('')}${'<span></span>'.repeat(blank)}${cells}</div>
-        <div class="legend"><span>${moon(90, 14)} Moon at sunrise</span><span><i>Diwali</i> Festival or vrat</span><span><b class="ring"></b> Today</span><span><b class="shade"></b> Selected</span></div></section>
+        <div class="legend"><span>${moon(90, 14)} Moon at sunrise</span><span><i>Diwali</i><b class="dot"></b> Festival or vrat</span><span><b class="ring"></b> Today</span><span><b class="shade"></b> Selected</span></div></section>
       ${p ? chap('—', `${new Date(Date.UTC(sel.y, sel.m, sel.d)).toLocaleDateString('en-IN', { timeZone: 'UTC', weekday: 'long' })}, <em>${sel.d} ${MONTHS[sel.m]}</em>`, lines([
           ['Tithi', limb(p.tithi), `until ${time(p.tithi[0].end)}`],
           ['Nakshatra', limb(p.nakshatra), `until ${time(p.nakshatra[0].end)}`],
@@ -536,8 +560,9 @@ const views = {
   },
   festivals() {
     const byMonth = Array.from({ length: 12 }, (_, m) => monthBriefs(sel.y, m).flatMap(b => b.fest.filter(f => !ROUTINE.includes(f)).map(f => [b, f])));
+    const today = iso(partsIn(new Date(), loc.tz)), next = byMonth.flat().find(([b]) => iso(b) >= today)?.[0];
     return `<h1 class="title">The festivals <em>of ${sel.y}</em></h1><p>Worked out for ${esc(loc.name)}. Monthly vrats such as Ekadashi and Pradosh sit on the month page.</p>
-      ${byMonth.map((list, m) => list.length ? chap(String(m + 1).padStart(2, '0'), `<em>${MONTHS[m]}</em>`, `<div class="ledger">${list.map(([b, f]) => `<a href="${url('today', b)}"><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${esc(f)}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('')}</div>`) : '').join('')}`;
+      ${byMonth.map((list, m) => list.length ? chap(String(m + 1).padStart(2, '0'), `<em>${MONTHS[m]}</em>`, `<div class="ledger">${list.map(([b, f]) => `<a href="${url('today', b)}"${b === next ? ' class="now"' : ''}><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${esc(f)}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('')}</div>`, next?.m === m && 'coming') : '').join('')}`;
   },
 };
 
@@ -570,7 +595,7 @@ function ahead() {
   const items = [
     find(f => f.includes('Ekadashi')), find(f => f.includes('Purnima')), find(f => /Amavasya|Diwali/.test(f)),
     find(f => !ROUTINE.includes(f) && !/Ekadashi|Purnima|Amavasya|^\w+ Sankranti$/.test(f)),
-  ].filter(Boolean);
+  ].filter(Boolean).sort((a, b) => days.indexOf(a[1]) - days.indexOf(b[1]));
   const from = Date.UTC(sel.y, sel.m, sel.d);
   return `<section class="ahead" aria-label="Coming up">${items.map(([f, d]) => {
     const n = Math.round((Date.UTC(d.y, d.m, d.d) - from) / 864e5);
@@ -601,12 +626,13 @@ function route() {
   const d = /^(\d{4})-(\d\d)-(\d\d)$/.exec(ps.get('date'));
   sel = d ? shift({ y: +d[1], m: d[2] - 1, d: +d[3] }, 0) : partsIn(new Date(), loc.tz);
   const nv = Object.hasOwn(OLD, h) ? OLD[h] : Object.hasOwn(VIEWS, h) ? h : 'today';
-  if (nv !== v) scrollTo(0, 0);
+  const arrived = nv !== v;
+  if (arrived) scrollTo(0, 0);
   const still = nv === v && v === 'calendar' && before && before.y === sel.y && before.m === sel.m; // same month: just move the selection
   $('out').classList.toggle('still', still);
   v = nv;
   if (h !== v) history.replaceState(null, '', url(v));
-  render(h === 'choghadiya' || h === 'hora' ? h : still ? 'peek' : null);
+  render(h === 'choghadiya' || h === 'hora' ? h : still ? 'peek' : arrived && v === 'festivals' ? 'coming' : null);
 }
 function go(nv, s, replace) {
   const u = url(nv, s);
@@ -619,7 +645,7 @@ function render(anchor) {
   const now = partsIn(new Date(), loc.tz);
   shownToday = iso(now);
   $('today').style.visibility = (v === 'festivals' ? sel.y === now.y : v === 'calendar' ? sel.y === now.y && sel.m === now.m : iso(sel) === iso(now)) ? 'hidden' : '';
-  $('lang').textContent = lang === 'hi' ? 'English names' : 'हिन्दी नाम';
+  $('lang').textContent = lang === 'hi' ? 'English' : 'हिन्दी';
   $('system').textContent = `Months: ${system}`;
   $('theme').textContent = `Theme: ${document.documentElement.dataset.theme || 'auto'}`;
   for (const m of document.querySelectorAll('meta[name=theme-color]')) m.content = getComputedStyle(document.body).backgroundColor; // browser bar matches a forced theme
@@ -633,6 +659,7 @@ function render(anchor) {
     folio(p, fest);
     const cv = document.querySelector(".folio canvas.moon"); if (cv) drawMoon(cv, p.phase);
     $('out').innerHTML = views[v](p, fest);
+    $('say').textContent = $('out').querySelector('.brief, .title')?.textContent || '';
     if (anchor) $(anchor)?.scrollIntoView({ block: anchor === 'peek' ? 'nearest' : 'start' });
   }, 0);
 }
@@ -654,7 +681,9 @@ setInterval(() => {
   }
   const el = $('live'); if (el && last?.p) el.innerHTML = summary(last.p, last.fest);
 }, 30000);
-$('folio').onclick = e => { if (e.target.closest('#pick')) try { $('date').showPicker(); } catch { $('date').focus(); } };
+const pickDate = () => { try { $('date').showPicker(); } catch { $('date').focus(); } };
+$('folio').onclick = e => { if (e.target.closest('#pick')) pickDate(); };
+$('pickdate').onclick = pickDate;
 $('lang').onclick = () => { lang = lang === 'hi' ? 'en' : 'hi'; store.set('lang', lang); render(); };
 $('system').onclick = () => { system = system === 'amanta' ? 'purnimanta' : 'amanta'; store.set('system', system); render(); };
 matchMedia('(prefers-color-scheme: dark)').onchange = () => render(); // the canvas moon's outline reads the theme
