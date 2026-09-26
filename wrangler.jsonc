@@ -1,0 +1,7 @@
+// Cloudflare Worker serving the site as static assets. Pushing to main deploys (Workers Builds).
+{
+  "name": "tithi",
+  "compatibility_date": "2026-09-26",
+  "assets": { "directory": "." },
+  "routes": [{ "pattern": "tithi.agenticrabbit.com", "custom_domain": true }]
+}
