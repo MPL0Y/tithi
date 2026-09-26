@@ -211,6 +211,22 @@
     return out;
   }
 
-  const api = { day, brief, festivals, tzOffset, localMidnight, NAKSHATRA, TITHI, MASA, RASHI };
+  // Built-in places, shared by the app and pages.js.
+  const CITIES = [
+    ['New Delhi', 28.6139, 77.2090, 'Asia/Kolkata'], ['Mumbai', 19.0760, 72.8777, 'Asia/Kolkata'],
+    ['Kolkata', 22.5726, 88.3639, 'Asia/Kolkata'], ['Chennai', 13.0827, 80.2707, 'Asia/Kolkata'],
+    ['Bengaluru', 12.9716, 77.5946, 'Asia/Kolkata'], ['Hyderabad', 17.3850, 78.4867, 'Asia/Kolkata'],
+    ['Ahmedabad', 23.0225, 72.5714, 'Asia/Kolkata'], ['Pune', 18.5204, 73.8567, 'Asia/Kolkata'],
+    ['Jaipur', 26.9124, 75.7873, 'Asia/Kolkata'], ['Lucknow', 26.8467, 80.9462, 'Asia/Kolkata'],
+    ['Varanasi', 25.3176, 82.9739, 'Asia/Kolkata'], ['Ujjain', 23.1765, 75.7885, 'Asia/Kolkata'],
+    ['Kathmandu', 27.7172, 85.3240, 'Asia/Kathmandu'], ['Singapore', 1.3521, 103.8198, 'Asia/Singapore'],
+    ['Dubai', 25.2048, 55.2708, 'Asia/Dubai'], ['London', 51.5074, -0.1278, 'Europe/London'],
+    ['New York', 40.7128, -74.0060, 'America/New_York'], ['Toronto', 43.6532, -79.3832, 'America/Toronto'],
+    ['San Francisco', 37.7749, -122.4194, 'America/Los_Angeles'], ['Sydney', -33.8688, 151.2093, 'Australia/Sydney'],
+  ].map(([name, lat, lon, tz]) => ({ name, lat, lon, tz }));
+  // Monthly vrats: on the month page, left off the year's festival lists.
+  const ROUTINE = ['Ekadashi', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi'];
+
+  const api = { day, brief, festivals, tzOffset, localMidnight, NAKSHATRA, TITHI, MASA, RASHI, CITIES, ROUTINE };
   if (typeof module !== 'undefined') module.exports = api; else root.Panchang = api;
 })(this, typeof Astronomy !== 'undefined' ? Astronomy : require('astronomy-engine'));

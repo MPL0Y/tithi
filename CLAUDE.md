@@ -9,6 +9,7 @@ Tithi is a minimal Hindu panchang (after drikpanchang.com): a static, client-sid
 ```sh
 python3 -m http.server 8779                          # local preview
 npm i --no-save astronomy-engine && node test.js     # festival/panchang self-check, prints "ok"
+node pages.js                                        # regenerate static festival pages + sitemap.xml
 ```
 
 Pushing to `main` auto-deploys (Workers Builds runs `npx wrangler deploy`). Ship straight to `main`; run `node test.js` first.
@@ -24,12 +25,15 @@ Pushing to `main` auto-deploys (Workers Builds runs `npx wrangler deploy`). Ship
   - Views: `today()`, `calendar()`, `festivals()`, drawn by `render()`.
   - A 30-second interval moves the "now" markers and rolls over at midnight.
   - Term notes and the "How this is worked out" note (`#method`) use the native Popover API.
+- **`pages.js`**: writes committed static HTML for search engines, which can't read the app's hash routes: `festival/<name>/` (every built-in city, `YEARS`), `festivals/<year>/<city>/`, `festivals/` and `sitemap.xml`. It runs `panchang.js` in Node and shares its `CITIES` and `ROUTINE`. Output is committed, so deploys stay build-free.
 - **`sw.js`**: offline support. Its own files are network-first; CDN files are cache-first; geocoding is never cached.
 
 ## Gotchas
 
 - **Adding a file the site needs:** un-ignore it in `.assetsignore`, which is a whitelist (the Worker's `assets.directory` is the repo root). Also add it to `CORE` in `sw.js`.
 - **Changing `CORE` or the offline behaviour:** bump `CACHE` in `sw.js`.
+- **Generated pages:** run `node pages.js` and commit after changing festival rules, `CITIES`, or the design tokens (its `<style>` copies them), and each January with `YEARS` bumped. Never hand-edit `festival/` or `festivals/`.
+- **Analytics:** Cloudflare Web Analytics beacon in `index.html` and `pages.js`, using the agenticrabbit.com zone's site token (the zone's auto-injection doesn't reach Worker assets). `sw.js` lets it through uncached.
 - **Festival rules:** update both `test.js` (reference dates copied from drikpanchang.com's yearly calendar, Delhi and London) and the Festivals paragraph of the `#method` note, which describes the rules and their known exceptions.
 - **Theme:** colours are CSS tokens on `:root`, with dark values under `prefers-color-scheme` and `[data-theme=dark]`. An inline head script applies the stored theme before first paint.
 - **Controls:** the prev/today/next controls must not shift position when pressed.

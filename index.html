@@ -20,6 +20,10 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A moon beside the word Tithi: today’s panchang, for your city.">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://tithi.agenticrabbit.com/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Tithi","url":"https://tithi.agenticrabbit.com/","description":"A free Hindu panchang: today’s tithi, nakshatra, Rahu kalam and festival dates for your city, worked out in your browser.","applicationCategory":"LifestyleApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","inLanguage":["en","hi"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Hardik","url":"https://x.com/hardikksharmaaa"}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
@@ -170,7 +174,21 @@
   .more { margin-top: 1.25rem; }
   .more a { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--ink); padding-bottom: 0.125rem; }
   .more a:hover { color: var(--sindoor); border-color: var(--sindoor); }
-  .colophon { margin-top: 5rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 0 1.75rem; }
+  .colophon { margin-top: 3rem; padding-top: 0.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 0 1.75rem; }
+  .colophon > a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .colophon > a:hover, .made a:hover { color: var(--sindoor); }
+  .made { flex-basis: 100%; margin-top: 0.5rem; font-size: 0.8125rem; color: var(--ink2); }
+  .made a { text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: 0.2em; }
+  .faq { margin-top: 5rem; }
+  .faq details { border-top: 1px solid var(--rule); }
+  .faq details:last-child { border-bottom: 1px solid var(--rule); }
+  .faq summary { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.75rem 0; font-family: var(--serif); font-size: 1.375rem; line-height: 1.2; cursor: pointer; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; font-family: var(--mono); font-size: 1rem; color: var(--muted); }
+  .faq details[open] summary::after { content: "–"; }
+  .faq summary:hover { color: var(--sindoor); }
+  .faq details p { color: var(--ink2); max-width: 34rem; padding-bottom: 1rem; }
+  .faq details a { text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: 0.2em; }
   .note.wide { margin: auto; width: min(40rem, calc(100vw - 2rem)); max-height: 85vh; overflow: auto; }
   .note.wide h3 { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; margin: 1.25rem 0 0.25rem; }
   .note.wide p + p { margin-top: 0.5rem; }
@@ -239,10 +257,19 @@
     </nav>
     <div id="out"></div>
     <p id="say" class="sr" aria-live="polite"></p>
-    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button></footer>
+    <section class="chap faq" aria-labelledby="faq"><header><span class="label">?</span><h2 id="faq">Questions</h2></header>
+      <details><summary>Why does my family or temple calendar differ by a day?</summary><p>Tithi dates each festival by the tithi that holds at the time it is kept, as Drik Panchang does. It doesn’t model eclipses, bhadra, nakshatra conditions or regional customs, and some traditions follow other rules. When a date matters, go by your family or temple.</p></details>
+      <details><summary>Why is a festival on a different day abroad?</summary><p>A tithi begins at the same moment everywhere, but a festival is kept on the day the tithi holds at a local time: sunrise, dusk or moonrise. In New York or London that time can fall on a different calendar day than in India. Pick your city to see its own dates, or compare cities on the <a href="/festivals/">festival pages</a>.</p></details>
+      <details><summary>Amanta or purnimanta: which months do I use?</summary><p>Amanta months end at the new moon and are used in the south and west. Purnimanta months end at the full moon and are used in the north. Festivals fall on the same days either way; only the month name in the dark fortnight changes. Switch with “Months” at the foot of the page.</p></details>
+      <details><summary>What is Rahu kalam?</summary><p>An eighth of the daytime ruled by Rahu, at a different point each weekday. Tradition says not to start anything new in it, a journey included; work already under way can carry on.</p></details>
+      <details><summary>Is it accurate outside India?</summary><p>Everything is worked out for your city’s coordinates and time zone. Festival dates are checked against Drik Panchang for New Delhi (2025–2027) and London (2026).</p></details>
+      <details><summary>Is it free? Does it work offline?</summary><p>It’s free, with no ads and no sign-up. After the first visit it works offline, and you can add it to your home screen from your browser’s share or menu button.</p></details>
+    </section>
+    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button><a href="/festivals/">Festival dates by city</a>
+      <p class="made">Free · No ads · No sign-up · Works offline · <a href="https://github.com/MPL0Y/tithi">Open source</a>. Made by <a href="https://x.com/hardikksharmaaa">Hardik</a>. Not affiliated with Drik Panchang.</p></footer>
     <div popover id="method" class="note wide">
       <b>How this is worked out</b>
-      <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables.</p>
+      <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables. Visits are counted with Cloudflare Web Analytics, which sets no cookies.</p>
       <h3>Sun and moon</h3>
       <p>Positions come from astronomy-engine, a precise open-source ephemeris. Sidereal longitudes use the Lahiri ayanamsa, approximated linearly, which is good to well under a minute of time for panchang purposes.</p>
       <p>The day runs from sunrise to the next sunrise. Sunrise is when the sun’s upper edge clears a sea-level horizon, with standard refraction. Hills, buildings and altitude can shift it by a few minutes.</p>
@@ -260,18 +287,7 @@
 <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2/astronomy.browser.min.js"></script>
 <script src="panchang.js"></script>
 <script>
-const CITIES = [
-  ['New Delhi', 28.6139, 77.2090, 'Asia/Kolkata'], ['Mumbai', 19.0760, 72.8777, 'Asia/Kolkata'],
-  ['Kolkata', 22.5726, 88.3639, 'Asia/Kolkata'], ['Chennai', 13.0827, 80.2707, 'Asia/Kolkata'],
-  ['Bengaluru', 12.9716, 77.5946, 'Asia/Kolkata'], ['Hyderabad', 17.3850, 78.4867, 'Asia/Kolkata'],
-  ['Ahmedabad', 23.0225, 72.5714, 'Asia/Kolkata'], ['Pune', 18.5204, 73.8567, 'Asia/Kolkata'],
-  ['Jaipur', 26.9124, 75.7873, 'Asia/Kolkata'], ['Lucknow', 26.8467, 80.9462, 'Asia/Kolkata'],
-  ['Varanasi', 25.3176, 82.9739, 'Asia/Kolkata'], ['Ujjain', 23.1765, 75.7885, 'Asia/Kolkata'],
-  ['Kathmandu', 27.7172, 85.3240, 'Asia/Kathmandu'], ['Singapore', 1.3521, 103.8198, 'Asia/Singapore'],
-  ['Dubai', 25.2048, 55.2708, 'Asia/Dubai'], ['London', 51.5074, -0.1278, 'Europe/London'],
-  ['New York', 40.7128, -74.0060, 'America/New_York'], ['Toronto', 43.6532, -79.3832, 'America/Toronto'],
-  ['San Francisco', 37.7749, -122.4194, 'America/Los_Angeles'], ['Sydney', -33.8688, 151.2093, 'Australia/Sydney'],
-].map(([name, lat, lon, tz]) => ({ name, lat, lon, tz }));
+const { CITIES, ROUTINE } = Panchang;
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const GLYPH = { Sun: '☉', Moon: '☽', Mars: '♂', Mercury: '☿', Jupiter: '♃', Venus: '♀', Saturn: '♄' };
@@ -431,7 +447,6 @@ function monthBriefs(y, m) {
   const b = Array.from({ length: n + 2 }, (_, k) => { const s = shift({ y, m, d: 1 }, k - 1); return Panchang.brief(s.y, s.m, s.d, loc); });
   return b.slice(1, -1).map((cur, k) => ({ ...cur, fest: Panchang.festivals(b[k], cur, b[k + 2]) }));
 }
-const ROUTINE = ['Ekadashi', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi'];
 // Plain-language notes behind the jargon, opened with a native popover.
 const TERMS = {
   Tithi: 'A lunar day: the time the moon takes to gain 12° on the sun. Thirty make a lunar month, and most festivals are set by them.',
@@ -709,5 +724,6 @@ document.addEventListener('keydown', e => {
 
 route();
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "39289d9b86624934a8e44069b40f2725"}'></script>
 </body>
 </html>
