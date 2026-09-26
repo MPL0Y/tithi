@@ -794,7 +794,7 @@ document.addEventListener('keydown', e => {
 
 // Google sign-in: OpenID Connect implicit flow from the browser; Google sends the ID token back in the URL hash.
 // ponytail: the token is decoded, not signature-checked, since nothing server-side trusts it yet. Verify it in the Worker once something does.
-const GOOGLE_CLIENT_ID = ''; // Google Cloud console: Web client, redirect URIs https://tithi.agenticrabbit.com/ and http://localhost:8779/
+const GOOGLE_CLIENT_ID = '431319218609-p82uavf9k38ujoo6he33qrd4vj6dh2em.apps.googleusercontent.com'; // Google Cloud console: Web client, redirect URIs https://tithi.agenticrabbit.com/ and http://localhost:8779/
 let user = store.get('user');
 function signIn() {
   const s = { state: crypto.randomUUID(), nonce: crypto.randomUUID() };
