@@ -22,8 +22,11 @@
   const mod = (x, n) => ((x % n) + n) % n;
   const add = (d, ms) => new Date(d.getTime() + ms);
 
-  // Lahiri ayanamsa, linear approximation (arcsecond-level drift over decades)
-  const ayanamsa = d => 23.85297 + 0.0139694 * ((d.getTime() / DAY + 2440587.5 - 2451545) / 365.25);
+  // Lahiri (Chitra paksha) ayanamsa: its 1956 value carried by general precession (IAU 2006), plus nutation,
+  // since the tropical longitudes below are true of date. Matches Drik Panchang's Moon to ~10″.
+  const cent = d => (d.getTime() / DAY + 2440587.5 - 2451545) / 36525, prec = t => 5028.796195 * t + 1.1054348 * t * t;
+  const LAHIRI_1956 = 23.250182778 - prec((2435553.5 - 2451545) / 36525) / 3600;
+  const ayanamsa = d => LAHIRI_1956 + prec(cent(d)) / 3600 + A.e_tilt(A.MakeTime(d)).dpsi / 3600;
   const sunTrop = d => A.SunPosition(d).elon;
   const moonTrop = d => A.EclipticGeoMoon(d).lon;
   const sunSid = d => mod(sunTrop(d) - ayanamsa(d), 360);
@@ -68,11 +71,13 @@
       .formatToParts(d).map(x => [x.type, +x.value]));
     return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second) - Math.floor(d.getTime() / 1000) * 1000;
   }
-  function localMidnight(y, m, d, tz) {
-    const t = Date.UTC(y, m, d);
+  // Wall-clock time in tz to an instant, with that date's own offset (history and DST).
+  function localTime(y, m, d, h, mi, tz) {
+    const t = Date.UTC(y, m, d, h, mi);
     const guess = t - tzOffset(new Date(t), tz);
     return new Date(t - tzOffset(new Date(guess), tz));
   }
+  const localMidnight = (y, m, d, tz) => localTime(y, m, d, 0, 0, tz);
 
   // --- lunar month ---
   const newMoonBefore = d => A.SearchMoonPhase(0, d, -31).date;
@@ -100,7 +105,7 @@
       pradosh: tithiIdx(add(sunset, 1.2 * HOUR)), nishita: tithiIdx(add(sunset, (DAY - dl) / 2)),
       moonrise: moonrise ? tithiIdx(moonrise) : tithiIdx(add(sunset, 2 * HOUR)),
     };
-    return { y, m, d, sunrise, tithi: t, at, sunRashiSet: Math.floor(sunSid(sunset) / 30), tithiName: tithiName(t), paksha: t < 15 ? 'Shukla' : 'Krishna', masa: masaAt(sunrise), sunRashi: Math.floor(sunSid(sunrise) / 30), weekday: new Date(Date.UTC(y, m, d)).getUTCDay() };
+    return { y, m, d, sunrise, tithi: t, at, nak: nakIdx(sunrise), moonRashi: Math.floor(moonSid(sunrise) / 30), sunRashiSet: Math.floor(sunSid(sunset) / 30), tithiName: tithiName(t), paksha: t < 15 ? 'Shukla' : 'Krishna', masa: masaAt(sunrise), sunRashi: Math.floor(sunSid(sunrise) / 30), weekday: new Date(Date.UTC(y, m, d)).getUTCDay() };
   }
 
   function day(y, m, d, loc) {
@@ -211,6 +216,76 @@
     return out;
   }
 
+  // --- For you: personal panchang from birth details. Traditional rules only. ---
+  // ponytail: tara/chandra bala, windows, dasha, Sade Sati and Jupiter only; no lagna, houses or divisional charts.
+  const NAK = 360 / 27, YEAR = 365.25 * DAY;
+  const TARA = ['Janma', 'Sampat', 'Vipat', 'Kshema', 'Pratyak', 'Sadhana', 'Naidhana', 'Mitra', 'Parama Mitra'];
+  const TARA_KIND = ['caution', 'good', 'bad', 'good', 'bad', 'good', 'bad', 'good', 'good'];
+  const CHANDRA_GOOD = [1, 3, 6, 7, 10, 11];
+  const DASHA = [['Ketu', 7], ['Venus', 20], ['Sun', 6], ['Moon', 10], ['Mars', 7], ['Rahu', 18], ['Jupiter', 16], ['Saturn', 19], ['Mercury', 17]];
+  const SADE_SATI = { 11: 'rising', 0: 'peak', 1: 'setting' }; // Saturn's sign counted from the birth Moon's, 0-based
+
+  // Birth moment; an unknown time is taken as noon.
+  function birthTime(p) {
+    const [y, m, d] = p.date.split('-').map(Number), [h, mi] = (p.time || '12:00').split(':').map(Number);
+    return localTime(y, m - 1, d, h, mi, p.tz);
+  }
+  // Nakshatras the Moon was in across the birth day (time unknown) or within an hour of the birth time.
+  function candidates(p) {
+    const t = birthTime(p), from = p.time ? add(t, -HOUR) : add(t, -12 * HOUR), to = p.time ? add(t, HOUR) : add(t, 12 * HOUR);
+    const out = [];
+    for (let x = from; x <= to; x = add(x, 10 * 60e3)) { const n = nakIdx(x); if (!out.includes(n)) out.push(n); }
+    return out;
+  }
+  // The birth Moon. A picked nakshatra (p.nak) overrides the computed one: the Moon sat at its near edge.
+  function natal(p) {
+    const t = birthTime(p);
+    let lon = moonSid(t);
+    if (p.nak != null && p.nak !== Math.floor(lon / NAK)) lon = (p.nak + (mod(p.nak - lon / NAK, 27) < 13 ? 0.001 : 0.999)) * NAK;
+    const nak = Math.floor(lon / NAK);
+    // Vimshottari: the dasha lord of the birth nakshatra, with the part of it already run counted back from birth.
+    const [, years] = DASHA[nak % 9], ran = lon / NAK - nak;
+    return { birth: t, moonLon: lon, nak, pada: Math.floor((lon / NAK - nak) * 4) + 1, rashi: Math.floor(lon / 30),
+      nakName: NAKSHATRA[nak], rashiName: RASHI[Math.floor(lon / 30)], dashaStart: new Date(t - ran * years * YEAR), dashaLord: nak % 9 };
+  }
+  // Maha- and antardasha running at `date`.
+  function dasha(n, date) {
+    let i = n.dashaLord, start = +n.dashaStart;
+    while (start + DASHA[i][1] * YEAR <= date) { start += DASHA[i][1] * YEAR; i = (i + 1) % 9; }
+    const maha = { lord: DASHA[i][0], start: new Date(start), end: new Date(start + DASHA[i][1] * YEAR) };
+    let j = i, s = start;
+    const len = k => DASHA[i][1] * DASHA[k][1] / 120 * YEAR;
+    while (s + len(j) <= date) { s += len(j); j = (j + 1) % 9; }
+    return { maha, antar: { lord: DASHA[j][0], start: new Date(s), end: new Date(s + len(j)) } };
+  }
+
+  const ranges = list => list.map(x => [+x.start, +x.end]);
+  const intersect = (a, b) => a.flatMap(([s, e]) => b.map(([s2, e2]) => [Math.max(s, s2), Math.min(e, e2)])).filter(([s, e]) => s < e);
+  const subtract = (a, cut) => cut.reduce((acc, [cs, ce]) => acc.flatMap(([s, e]) => [[s, Math.min(e, cs)], [Math.max(s, ce), e]].filter(([x, y]) => x < y)), a);
+  const merge = a => a.sort((x, y) => x[0] - y[0]).reduce((out, r) => { const l = out[out.length - 1]; if (l && r[0] <= l[1]) l[1] = Math.max(l[1], r[1]); else out.push([...r]); return out; }, []);
+  // Spans of a day() limb list with their start times.
+  const withStart = (list, from) => list.map((x, k) => ({ ...x, start: k ? list[k - 1].end : from }));
+
+  // How a day() stands for the natal Moon n: tara bala, chandra bala and the windows where everything is good.
+  function personal(p, n) {
+    const tara = withStart(p.nakshatra, p.sunrise).map(x => { const k = mod(x.i - n.nak, 27) % 9; return { start: x.start, end: x.end, name: TARA[k], kind: TARA_KIND[k] }; });
+    const chandra = withStart(p.moonRashi, p.sunrise).map(x => { const house = mod(x.i - n.rashi, 12) + 1; return { start: x.start, end: x.end, house, kind: CHANDRA_GOOD.includes(house) ? 'good' : 'bad', ashtama: house === 8 }; });
+    const good = l => ranges(l.filter(x => x.kind === 'good'));
+    let w = merge(ranges(p.choghadiya.day.filter(c => c.kind === 'good')));
+    w = subtract(w, ranges([p.rahu, p.yamaganda, p.gulika, ...p.durMuhurta]));
+    w = merge(intersect(intersect(w, good(tara)), good(chandra)));
+    return { tara, chandra, windows: w.map(([s, e]) => ({ start: new Date(s), end: new Date(e) })) };
+  }
+  // Tara at sunrise and chandrashtama, for month tints; b is a brief().
+  const glance = (b, n) => ({ tara: TARA_KIND[mod(b.nak - n.nak, 27) % 9], ashtama: mod(b.moonRashi - n.rashi, 12) === 7 });
+
+  const planetSid = (body, d) => mod(A.Ecliptic(A.GeoVector(body, d, true)).elon - ayanamsa(d), 360);
+  // Slow background at `date`: dasha, Sade Sati phase (or null), Jupiter's house from the birth Moon.
+  function transits(date, n) {
+    const sat = mod(Math.floor(planetSid('Saturn', date) / 30) - n.rashi, 12);
+    return { ...dasha(n, date), sadeSati: SADE_SATI[sat] || null, jupiter: mod(Math.floor(planetSid('Jupiter', date) / 30) - n.rashi, 12) + 1 };
+  }
+
   // Built-in places, shared by the app and pages.js.
   const CITIES = [
     ['New Delhi', 28.6139, 77.2090, 'Asia/Kolkata'], ['Mumbai', 19.0760, 72.8777, 'Asia/Kolkata'],
@@ -227,6 +302,6 @@
   // Monthly vrats: on the month page, left off the year's festival lists.
   const ROUTINE = ['Ekadashi', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi'];
 
-  const api = { day, brief, festivals, tzOffset, localMidnight, NAKSHATRA, TITHI, MASA, RASHI, CITIES, ROUTINE };
+  const api = { day, brief, festivals, tzOffset, localMidnight, localTime, birthTime, candidates, natal, dasha, personal, glance, transits, TARA, NAKSHATRA, TITHI, MASA, RASHI, CITIES, ROUTINE };
   if (typeof module !== 'undefined') module.exports = api; else root.Panchang = api;
 })(this, typeof Astronomy !== 'undefined' ? Astronomy : require('astronomy-engine'));

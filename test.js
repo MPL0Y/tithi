@@ -49,4 +49,52 @@ assert.equal(d.vara, 'Somavara');
 assert.equal(d.amanta, 'Ashwin');
 assert.equal(d.vikram, 2082);
 assert.equal(d.nakshatra[0].name, 'Hasta');
+
+// For you. Reference values from Drik Panchang's Janma Kundali, Tarabalam/Chandrabalam and Shani transit pages.
+const near = (d, iso, min, label) => assert(Math.abs(d - new Date(iso)) <= min * 60e3, `${label}: expected ${iso}, got ${d.toISOString()}`);
+// Birth Moon: nakshatra, pada, rashi. Mumbai is 6′ short of the Magha/Purva Phalguni line; London is in BST.
+for (const [b, nak, pada, rashi] of [
+  [{ date: '1990-05-15', time: '10:30', lat: 28.652, lon: 77.231, tz: 'Asia/Kolkata' }, 'Uttara Ashadha', 1, 'Dhanu'], // Moon 29°50′23″ Dhanu
+  [{ date: '1988-11-03', time: '23:40', lat: 19.073, lon: 72.883, tz: 'Asia/Kolkata' }, 'Magha', 4, 'Simha'], // 13°14′21″ Simha
+  [{ date: '1995-07-20', time: '14:00', lat: 51.509, lon: -0.126, tz: 'Europe/London' }, 'Bharani', 1, 'Mesha'], // 15°38′25″ Mesha
+]) {
+  const n = P.natal(b);
+  assert.deepEqual([n.nakName, n.pada, n.rashiName], [nak, pada, rashi], `natal ${b.date}`);
+}
+assert.deepEqual(P.candidates({ date: '1988-11-03', time: '23:40', tz: 'Asia/Kolkata' }).map(i => P.NAKSHATRA[i]), ['Magha', 'Purva Phalguni']);
+assert.equal(P.natal({ date: '1988-11-03', time: '23:40', tz: 'Asia/Kolkata', nak: 10 }).nakName, 'Purva Phalguni');
+
+// Tara bala and chandra bala in Delhi for a Rohini (Vrishabha) native; chandrashtama for Vrishchika.
+const ROHINI = { nak: 3, rashi: 1 };
+for (const [y, m, dd, tara, chandra] of [
+  [2026, 8, 26, [['Kshema', '2026-09-26T11:32+05:30'], ['Pratyak']], [[11, 'good']]],
+  [2026, 9, 3, [['Vipat', '2026-10-04T01:29+05:30'], ['Kshema']], [[2, 'bad']]],
+  [2027, 0, 15, [['Sadhana', '2027-01-15T23:51+05:30'], ['Naidhana']], [[11, 'good', '2027-01-15T23:51+05:30'], [12, 'bad']]],
+]) {
+  const me = P.personal(P.day(y, m, dd, DELHI), ROHINI);
+  assert.deepEqual(me.tara.map(x => x.name), tara.map(x => x[0]), `tara ${y}-${m + 1}-${dd}`);
+  tara.forEach(([, end], k) => end && near(me.tara[k].end, end, 2, `tara end ${y}-${m + 1}-${dd}`));
+  assert.deepEqual(me.chandra.map(x => [x.house, x.kind]), chandra.map(x => x.slice(0, 2)), `chandra ${y}-${m + 1}-${dd}`);
+  chandra.forEach(([, , end], k) => end && near(me.chandra[k].end, end, 2, `chandra end ${y}-${m + 1}-${dd}`));
+}
+assert(P.personal(P.day(2026, 9, 3, DELHI), { nak: 16, rashi: 7 }).chandra.every(x => x.ashtama));
+
+// Vimshottari for the Delhi birth above: Rahu 10 Dec 2011 – 10 Dec 2029, Surya antardasha 29 Jun 2026 – 23 May 2027.
+const ds = P.dasha(P.natal({ date: '1990-05-15', time: '10:30', tz: 'Asia/Kolkata' }), new Date('2026-09-26'));
+assert.deepEqual([ds.maha.lord, ds.antar.lord], ['Rahu', 'Sun']);
+near(ds.maha.start, '2011-12-10T18:17+05:30', 2880, 'Rahu start'); near(ds.maha.end, '2029-12-10T09:02+05:30', 2880, 'Rahu end');
+near(ds.antar.start, '2026-06-29T05:48+05:30', 2880, 'Surya start'); near(ds.antar.end, '2027-05-23T23:21+05:30', 2880, 'Surya end');
+
+// Sade Sati for a Kumbha Moon: Saturn enters Makara 24 Jan 2020 12:10, leaves Meena for good 23 Feb 2028 20:00 (IST; ours is within ~1h).
+const sade = iso => P.transits(new Date(iso), { rashi: 10, dashaStart: new Date(0), dashaLord: 0 }).sadeSati;
+assert.deepEqual(['2020-01-24T06:00+05:30', '2020-01-24T18:00+05:30', '2023-02-01', '2025-04-05', '2027-07-01', '2027-11-01', '2028-02-23T12:00+05:30', '2028-02-24T12:00+05:30'].map(sade),
+  [null, 'rising', 'peak', 'setting', null, 'setting', 'setting', null]);
+
+// Best windows never overlap Rahu kalam (or the other avoided periods), and only fall in good tara and chandra bala.
+for (let k = 0; k < 60; k++) {
+  const day = P.day(2026, 0, 1 + k, DELHI), me = P.personal(day, { nak: k % 27, rashi: k % 12 });
+  for (const w of me.windows) for (const r of [day.rahu, day.yamaganda, day.gulika, ...day.durMuhurta])
+    assert(w.end <= r.start || w.start >= r.end, `window overlaps an avoided period on day ${k}`);
+  for (const w of me.windows) for (const x of [...me.tara, ...me.chandra]) if (x.kind !== 'good') assert(w.end <= x.start || w.start >= x.end, `window in a bad span on day ${k}`);
+}
 console.log('ok');

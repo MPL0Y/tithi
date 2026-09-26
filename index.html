@@ -32,7 +32,7 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
 <style>
   :root {
     --paper: #f2ede4; --recess: #ebe5da; --ink: #1c1b19; --ink2: #5b574f; --muted: #6f695f; --rule: #d8d1c4;
-    --sindoor: #b23624; --lit: #f2ede4; --unlit: #1c1b19;
+    --sindoor: #b23624; --lit: #f2ede4; --unlit: #1c1b19; --ashtama: #efd6cb; --tarabad: #dbddd6;
     --serif: "Instrument Serif", "Tiro Devanagari Hindi", Georgia, serif;
     --sans: "Instrument Sans", system-ui, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -41,11 +41,11 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
   /* dark: follows the system unless the theme switch says otherwise */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme=light]) { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #948e83; --rule: #34312c;
-      --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; color-scheme: dark; }
+      --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; --ashtama: #3b2420; --tarabad: #25292b; color-scheme: dark; }
     :root:not([data-theme=light]) body::before { mix-blend-mode: screen; opacity: 0.12; }
   }
   :root[data-theme=dark] { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #948e83; --rule: #34312c;
-    --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; color-scheme: dark; }
+    --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; --ashtama: #3b2420; --tarabad: #25292b; color-scheme: dark; }
   :root[data-theme=dark] body::before { mix-blend-mode: screen; opacity: 0.12; }
   * { box-sizing: border-box; margin: 0; }
   body { background: var(--paper); color: var(--ink); font: 400 0.9375rem/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
@@ -200,6 +200,33 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
   @keyframes ink { from { opacity: 0; filter: blur(3px); } }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
+  /* For you */
+  .foryou { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--ink); }
+  .foryou > header { display: flex; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .foryou .say { font-family: var(--serif); font-size: 1.375rem; line-height: 1.3; max-width: 40rem; }
+  .foryou .say + .say { margin-top: 0.25rem; }
+  .foryou .say b { font-weight: 400; font-style: italic; }
+  .foryou .warn { color: var(--sindoor); margin-top: 0.75rem; max-width: 40rem; }
+  .foryou h3 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.125rem; margin: 1.25rem 0 0.25rem; }
+  .foryou .bg { margin-top: 1rem; color: var(--ink2); }
+  .foryou .acts { display: flex; flex-wrap: wrap; gap: 0 1.5rem; align-items: center; margin-top: 0.5rem; }
+  .foryou .acts button, .foryou.in button { min-height: 44px; }
+  .foryou.in { padding-top: 0.25rem; color: var(--ink2); }
+  .foryou.in button { color: var(--ink); text-decoration: underline; text-underline-offset: 0.3em; margin-right: 0.25rem; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem 1.5rem; margin-top: 1.25rem; align-items: end; }
+  .fields label { display: grid; gap: 0.25rem; }
+  .fields input:not([type=checkbox]) { font-family: var(--sans); font-size: 1rem; letter-spacing: 0; text-transform: none; min-height: 44px; width: 100%; }
+  .fields input:disabled { opacity: 0.4; }
+  .fields .chk, .nakpick label { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; font-size: 0.875rem; color: var(--ink2); cursor: pointer; }
+  input[type=checkbox], input[type=radio] { appearance: auto; border: 0; accent-color: var(--sindoor); width: 1rem; height: 1rem; margin: 0; }
+  .nakpick { margin-top: 1rem; }
+  .nakpick p { color: var(--ink2); }
+  .nakpick div { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
+  .birthform .acts .cta { min-height: 44px; }
+  .cal a.tara-bad:not(.sel) { background: var(--tarabad); }
+  .cal a.ashtama:not(.sel) { background: var(--ashtama); }
+  .legend .tint { width: 1rem; height: 1rem; }
+
   /* landing: shown when the URL names no view */
   :root[data-landing] .page, :root:not([data-landing]) #landing { display: none; }
   #landing { max-width: 1160px; min-height: 100svh; margin: 0 auto; padding: 2.5rem 1.5rem 3rem; display: grid; grid-template-rows: auto 1fr auto; gap: 3rem; }
@@ -328,7 +355,7 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <p class="made">Free · No ads · No sign-up · Works offline · <a href="https://github.com/MPL0Y/tithi">Open source</a>. Made by <a href="https://x.com/hardikksharmaaa">Hardik</a>. Not affiliated with Drik Panchang.</p></footer>
     <div popover id="method" class="note wide">
       <b>How this is worked out</b>
-      <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables. Visits are counted with Cloudflare Web Analytics, which sets no cookies. Signing in with Google is optional; your name stays in this browser.</p>
+      <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables. Visits are counted with Cloudflare Web Analytics, which sets no cookies. Signing in with Google is optional; it keeps your birth details for the For you section.</p>
       <h3>Sun and moon</h3>
       <p>Positions come from astronomy-engine, a precise open-source ephemeris. Sidereal longitudes use the Lahiri ayanamsa, approximated linearly, which is good to well under a minute of time for panchang purposes.</p>
       <p>The day runs from sunrise to the next sunrise. Sunrise is when the sun’s upper edge clears a sea-level horizon, with standard refraction. Hills, buildings and altitude can shift it by a few minutes.</p>
@@ -339,6 +366,9 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <p>Rahu kalam, Yamaganda and Gulika are eighths of the daytime; choghadiya are eighths of the day and of the night; hora are twelfths of each; a muhurta is a fifteenth.</p>
       <h3>Festivals</h3>
       <p>A festival falls on the day its tithi holds at the time the observance is kept: sunrise for most, including Janmashtami; midday for Ganesh Chaturthi and Rama Navami; afternoon for Dussehra and Bhai Dooj; dusk for Holika Dahan, Diwali, Dhanteras, Sharad Purnima and Pradosh; midnight for Shivaratri; moonrise for Karwa Chauth and Sankashti. If it holds at that time on two days, the first is taken; if on neither, the day whose sunrise it covers. A sankranti after sunset is kept the next day.</p>
+      <h3>For you</h3>
+      <p>From your birth date, time and place the Moon’s sidereal position at birth gives your nakshatra, pada and rashi. Tara bala counts from your nakshatra to the day’s, in nines: Janma (caution), Sampat, Vipat (avoid), Kshema, Pratyak (avoid), Sadhana, Naidhana (avoid), Mitra, Parama Mitra. Chandra bala counts the day’s Moon sign from yours: the 1st, 3rd, 6th, 7th, 10th and 11th are good, and the 8th is chandrashtama. The best windows are the good day choghadiya (Amrit, Shubh, Labh) outside Rahu kalam, Yamaganda, Gulika and dur muhurta, while both tara and chandra bala are good.</p>
+      <p>The Vimshottari dasha starts with the lord of your birth nakshatra, whose period is cut by the part of the nakshatra the Moon had already crossed; antardashas split each period in the same order and proportion, with 365.25-day years. Sade Sati is Saturn in the 12th, 1st or 2nd sign from your Moon (rising, peak, setting); Jupiter’s house is counted the same way. These are traditional rules, given as guidance, not prediction. Your birth details are stored with your Google account so they follow you between devices, and a copy stays in this browser; delete them from the For you section at any time.</p>
       <p>These dates match Drik Panchang for New Delhi across 2025–2027 and for London in 2026, with one exception: in 2026 Drik moves Holika Dahan and Holi a day later for Delhi, most likely because of that evening’s lunar eclipse. Eclipses, bhadra timings, regional customs and nakshatra conditions are not modelled, so a family or temple calendar can differ by a day. When it matters, check with them.</p>
     </div>
   </main>
@@ -389,6 +419,8 @@ const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } cat
 let loc = store.get('loc') || CITIES[0];
 let lang = store.get('lang') || 'en', system = store.get('system') || 'amanta';
 let sel; // {y, m, d} in loc's time zone
+// For you: birth details (raw inputs only) from the API, cached here so they paint at once and offline.
+let birth = store.get('birth'), natal = birth && Panchang.natal(birth), editing = false;
 
 function partsIn(date, tz) {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(date).map(x => [x.type, +x.value]));
@@ -522,6 +554,11 @@ const TERMS = {
   Samvat: 'The era the year is counted in. Vikram Samvat runs about 57 years ahead of the Gregorian year; Shaka about 78 behind.',
   Month: 'Amanta months end at the new moon (used in the south and west); purnimanta months end at the full moon (used in the north).',
   Ritu: 'One of six seasons, each two lunar months long.',
+  'Tara bala': 'Your birth nakshatra counted to the day’s, in nines. Sampat, Kshema, Sadhana, Mitra and Parama Mitra are good; Vipat, Pratyak and Naidhana are avoided; Janma calls for care.',
+  'Chandra bala': 'The day’s Moon sign counted from your birth Moon sign. The 1st, 3rd, 6th, 7th, 10th and 11th are good.',
+  Chandrashtama: 'The Moon in the 8th sign from your birth Moon, for about two and a half days a month. Tradition says not to start anything important.',
+  Dasha: 'Vimshottari dasha: 120 years shared among nine planets in a fixed order, starting from the lord of your birth nakshatra. Each period (mahadasha) splits into sub-periods (antardasha).',
+  'Sade Sati': 'The seven and a half years Saturn takes to cross the sign before your Moon sign, your Moon sign and the one after: rising, peak and setting.',
   Ayana: 'The sun’s half-year: Uttarayana while it moves north after the winter solstice, Dakshinayana while it moves south.',
 };
 let termId = 0;
@@ -551,27 +588,31 @@ function folio(p, fest) {
   $('next').setAttribute('aria-label', 'Next ' + unit);
 }
 function fillCities() { if (document.activeElement !== $('city')) $('city').value = loc.name; }
-// City search: the built-in list plus Open-Meteo's geocoder (no key; only the typed text is sent).
-let found = [], timer;
 const label = c => c.label || c.name;
-function listPlaces(list) { found = list; $('places').innerHTML = list.map(c => `<option value="${esc(label(c))}">`).join(''); }
-listPlaces(CITIES);
+// City search on an input and its datalist: the built-in list plus Open-Meteo's geocoder (no key; only the typed text is sent).
+function placeSearch(input, list, pick, miss) {
+  let found = [], timer;
+  const show = l => { found = l; list.innerHTML = l.map(c => `<option value="${esc(label(c))}">`).join(''); };
+  const hit = () => found.find(c => label(c) === input.value.trim());
+  show(CITIES);
+  input.addEventListener('input', () => {
+    const q = input.value.trim(), h = hit();
+    if (h) { input.blur(); return pick(h); } // picked from the list
+    clearTimeout(timer);
+    if (q.length < 2) return show(CITIES);
+    timer = setTimeout(async () => {
+      const local = CITIES.filter(c => c.name.toLowerCase().startsWith(q.toLowerCase()));
+      try {
+        const r = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&name=' + encodeURIComponent(q))).json();
+        if (input.value.trim() !== q) return; // a newer search is on its way
+        show([...local, ...(r.results || []).filter(x => x.timezone).map(x => ({ name: x.name, label: [x.name, x.admin1, x.country].filter(Boolean).join(', '), lat: x.latitude, lon: x.longitude, tz: x.timezone }))]);
+      } catch { show(local); }
+    }, 250);
+  });
+  input.addEventListener('change', () => { const h = hit(); h ? pick(h) : miss(); });
+}
+placeSearch($('city'), $('places'), setLoc, () => { $('city').value = loc.name; });
 $('city').onfocus = e => e.target.select();
-$('city').oninput = e => {
-  const q = e.target.value.trim(), hit = found.find(c => label(c) === q);
-  if (hit) { e.target.blur(); return setLoc(hit); } // picked from the list
-  clearTimeout(timer);
-  if (q.length < 2) return listPlaces(CITIES);
-  timer = setTimeout(async () => {
-    const local = CITIES.filter(c => c.name.toLowerCase().startsWith(q.toLowerCase()));
-    try {
-      const r = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&name=' + encodeURIComponent(q))).json();
-      if ($('city').value.trim() !== q) return; // a newer search is on its way
-      listPlaces([...local, ...(r.results || []).filter(x => x.timezone).map(x => ({ name: x.name, label: [x.name, x.admin1, x.country].filter(Boolean).join(', '), lat: x.latitude, lon: x.longitude, tz: x.timezone }))]);
-    } catch { listPlaces(local); }
-  }, 250);
-};
-$('city').onchange = e => { const hit = found.find(c => label(c) === e.target.value.trim()); hit ? setLoc(hit) : (e.target.value = loc.name); };
 $('city').onblur = e => { e.target.value = loc.name; };
 $('prev').onclick = () => step(-1);
 $('next').onclick = () => step(1);
@@ -586,7 +627,7 @@ const views = {
     if (!p) return '<p class="empty">No sunrise here today, so no panchang.</p>';
     const q = c => ({ good: 'good', bad: 'avoid', neutral: 'neutral' })[c.kind];
     const withGlyph = list => list.map(h => ({ ...h, name: `${GLYPH[h.name]}  ${h.name}` }));
-    return `<div id="live">${summary(p, fest)}</div>` + ahead()
+    return `<div id="live">${summary(p, fest)}</div>` + ahead() + forYou(p)
       + chap('01', 'The sun’s <em>path</em>', `${sunArc(p)}
         <div class="caption">${[['Sunrise', p.sunrise], ['Sunset', p.sunset], ['Moonrise', p.moonrise], ['Moonset', p.moonset]].map(([k, v]) => `<div><span class="label">${k}</span><b>${time(v)}</b></div>`).join('')}</div>`)
       + chap('02', 'Five <em>limbs</em>', lines([
@@ -615,14 +656,16 @@ const views = {
     const blank = new Date(Date.UTC(sel.y, sel.m, 1)).getUTCDay();
     const cells = days.map(b => {
       const f = b.fest.find(x => !ROUTINE.includes(x)) || b.fest[0] || '';
-      const cls = [b.d === sel.d && 'sel', iso(b) === today && 'today', f && 'fe'].filter(Boolean).join(' ');
-      return `<a href="${url('calendar', b)}" class="${cls}" aria-label="${b.d} ${MONTHS[b.m]}, ${b.paksha} ${b.tithiName}${f ? ', ' + esc(f) : ''}">
+      const g = natal && Panchang.glance(b, natal);
+      const cls = [b.d === sel.d && 'sel', iso(b) === today && 'today', f && 'fe', g?.ashtama ? 'ashtama' : g?.tara === 'bad' && 'tara-bad'].filter(Boolean).join(' ');
+      const mine = g?.ashtama ? ', chandrashtama for you' : g?.tara === 'bad' ? ', weak tara for you' : '';
+      return `<a href="${url('calendar', b)}" class="${cls}" aria-label="${b.d} ${MONTHS[b.m]}, ${b.paksha} ${b.tithiName}${f ? ', ' + esc(f) : ''}${mine}">
         ${moon(b.tithi * 12 + 6, 12)}<span class="n">${b.d}</span><span class="tt">${b.paksha[0]} · ${esc(b.tithiName)}</span><span class="f">${esc(f)}</span></a>`;
     }).join('');
     const list = days.filter(b => b.fest.length).map(b => `<a href="${url('today', b)}"><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${b.fest.map(esc).join(', ')}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('');
     return `<h1 class="title">${MONTHS[sel.m]} <em>${sel.y}</em></h1><p>Tithi at sunrise in ${esc(loc.name)}.</p>
       <section class="chap"><div class="cal">${WD.map(w => `<span class="wd label">${w}</span>`).join('')}${'<span></span>'.repeat(blank)}${cells}</div>
-        <div class="legend"><span>${moon(90, 14)} Moon at sunrise</span><span><i>Diwali</i><b class="dot"></b> Festival or vrat</span><span><b class="ring"></b> Today</span><span><b class="shade"></b> Selected</span></div></section>
+        <div class="legend"><span>${moon(90, 14)} Moon at sunrise</span><span><i>Diwali</i><b class="dot"></b> Festival or vrat</span><span><b class="ring"></b> Today</span><span><b class="shade"></b> Selected</span>${natal ? '<span><b class="tint" style="background:var(--ashtama)"></b> Chandrashtama for you</span><span><b class="tint" style="background:var(--tarabad)"></b> Weak tara at sunrise</span>' : ''}</div></section>
       ${p ? chap('—', `${new Date(Date.UTC(sel.y, sel.m, sel.d)).toLocaleDateString('en-IN', { timeZone: 'UTC', weekday: 'long' })}, <em>${sel.d} ${MONTHS[sel.m]}</em>`, lines([
           ['Tithi', limb(p.tithi), `until ${time(p.tithi[0].end)}`],
           ['Nakshatra', limb(p.nakshatra), `until ${time(p.nakshatra[0].end)}`],
@@ -676,6 +719,92 @@ function ahead() {
     return `<a href="${url('today', d)}"><span class="label">${n === 1 ? 'Tomorrow' : `In ${n} days`}</span><b>${esc(f)}</b><span class="time">${WD[d.weekday]}, ${d.d} ${MONTHS[d.m].slice(0, 3)}</span></a>`;
   }).join('')}</section>`;
 }
+
+// For you: how the shown day and place stand for the signed-in user's birth Moon.
+const KIND = { good: 'good', bad: 'avoid', caution: 'caution' };
+const ORD = n => n + ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10 * (n % 100 < 11 || n % 100 > 13)] || 'th');
+const longDate = d => d.toLocaleDateString('en-IN', { timeZone: loc.tz, day: 'numeric', month: 'short', year: 'numeric' });
+function forYou(p) {
+  if (!user) return `<p class="foryou in"><button data-signin>Sign in</button> to see how today is for you.</p>`;
+  if (!natal || editing) return birthForm();
+  const me = Panchang.personal(p, natal), bg = Panchang.transits(p.sunrise, natal);
+  const then = (list, show) => list.map((x, i) => show(x) + (list[i + 1] ? ` until ${time(x.end)}` : '')).join(', then ');
+  const ashtama = me.chandra.find(x => x.ashtama);
+  const chog = w => p.choghadiya.day.find(c => c.start <= w.start && w.start < c.end)?.name || '';
+  return `<section class="foryou" aria-label="For you"><header><span class="label">For you</span><span class="label">Moon in ${esc(natal.nakName)} (pada ${natal.pada}), ${esc(natal.rashiName)} rashi</span></header>
+    <p class="say">${term('Tara bala')}: ${then(me.tara, x => `<b>${esc(x.name)}</b> (${KIND[x.kind]})`)}.</p>
+    <p class="say">${term('Chandra bala')}: ${then(me.chandra, x => `<b>${ORD(x.house)} house</b> (${KIND[x.kind]})`)}.</p>
+    ${ashtama ? `<p class="warn">${term('Chandrashtama')} ${ashtama.start > p.sunrise ? `from ${time(ashtama.start)}` : ashtama.end < p.nextSunrise ? `until ${time(ashtama.end)}` : 'all day'}: the Moon is 8th from your birth Moon. Tradition says not to start anything important.</p>` : ''}
+    <h3>Best windows</h3>
+    ${me.windows.length ? periods(me.windows.map(w => ({ ...w, name: chog(w) })), () => 'good') : '<p class="sub">None today: no good choghadiya falls outside Rahu kalam, Yamaganda, Gulika and dur muhurta while tara and chandra bala are both good.</p>'}
+    <p class="bg mono">${esc(bg.maha.lord)} ${term('Dasha')} · ${esc(bg.antar.lord)} antardasha to ${longDate(bg.antar.end)}${bg.sadeSati ? ` · ${term('Sade Sati')}, ${bg.sadeSati}` : ''} · Jupiter in your ${ORD(bg.jupiter)}</p>
+    <p class="acts mono"><button data-edit>Edit birth details</button><button data-delete>Delete my birth details</button><span id="birthmsg" role="status"></span></p></section>`;
+}
+function birthForm() {
+  return `<form class="foryou birthform" id="birth" autocomplete="off" aria-label="Birth details"><header><span class="label">For you</span></header>
+    <p class="say">Your birth date, time and place, as for a kundli.</p>
+    <p class="sub">Saved with your Google account; delete them any time. They never go in the page address.</p>
+    <div class="fields">
+      <label><span class="label">Born on</span><input type="date" name="date" required min="1800-01-01" max="${iso(partsIn(new Date(), 'UTC'))}"></label>
+      <label><span class="label">At</span><input type="time" name="time" required></label>
+      <label class="chk"><input type="checkbox" name="notime"> I don’t know my birth time</label>
+      <label><span class="label">In</span><input name="place" list="bplaces" required placeholder="City" spellcheck="false"></label><datalist id="bplaces"></datalist>
+    </div>
+    <div class="nakpick" id="nakpick"></div>
+    <p class="acts mono"><button class="cta">Save</button>${natal ? '<button type="button" data-cancel>Cancel</button>' : ''}<span id="birthmsg" role="status"></span></p></form>`;
+}
+function wireBirth() {
+  const f = $('birth');
+  if (!f) return;
+  let place = birth && { name: birth.place, lat: birth.lat, lon: birth.lon, tz: birth.tz };
+  if (birth) { f.date.value = birth.date; f.time.value = birth.time || ''; f.notime.checked = !birth.time; f.place.value = birth.place; }
+  const draft = () => place && f.date.value && (f.notime.checked || f.time.value)
+    && { date: f.date.value, time: f.notime.checked ? null : f.time.value, place: label(place), lat: place.lat, lon: place.lon, tz: place.tz, nak: null };
+  // Near a nakshatra change, or with no time, the user picks their own nakshatra.
+  const check = () => {
+    f.time.disabled = f.notime.checked;
+    const d = draft(), c = d ? Panchang.candidates(d) : [];
+    $('nakpick').innerHTML = c.length < 2 ? '' : `<p>${d.time ? 'The Moon changed nakshatra within an hour of that time.' : 'Without a birth time the Moon could be in any of these.'} Which is your nakshatra?</p>
+      <div>${c.map(i => `<label><input type="radio" name="nak" value="${i}" required${birth?.nak === i ? ' checked' : ''}> ${esc(Panchang.NAKSHATRA[i])}</label>`).join('')}</div>`;
+  };
+  placeSearch(f.place, $('bplaces'), c => { place = c; check(); }, () => { place = null; check(); });
+  f.addEventListener('input', e => { if (!['place', 'nak'].includes(e.target.name)) check(); });
+  check();
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const d = draft();
+    if (!d) return say('Pick your birth place from the list.');
+    const pick = f.querySelector('[name=nak]:checked');
+    if (pick) d.nak = +pick.value;
+    try { setBirth(await api('PUT', d)); editing = false; render(); } catch (err) { say(err.message); }
+  };
+}
+const say = m => { const el = $('birthmsg'); if (el) el.textContent = m; };
+const fresh = () => user?.token && user.exp * 1000 > Date.now() + 60e3;
+async function api(method, body) {
+  if (!fresh()) throw new Error('Your sign-in has expired. Sign out and sign in again, then retry.');
+  const r = await fetch('/api/birth', { method, headers: { authorization: `Bearer ${user.token}`, 'content-type': 'application/json' }, body: body && JSON.stringify(body) })
+    .catch(() => { throw new Error('You’re offline. Try again when you’re connected.'); });
+  if (r.status === 401) throw new Error('Your sign-in has expired. Sign out and sign in again, then retry.');
+  if (!r.ok) throw new Error('That didn’t save. Check the details and try again.');
+  return r.status === 204 ? null : r.json();
+}
+function setBirth(b) { birth = b; natal = b && Panchang.natal(b); store.set('birth', b); }
+// Pull the stored details once per load, so another device's changes show up.
+async function syncBirth() {
+  if (!fresh()) return;
+  try { const b = await api('GET'); if (JSON.stringify(b) !== JSON.stringify(birth)) { setBirth(b); if (location.hash.slice(1)) render(); } } catch {}
+}
+$('out').addEventListener('click', async e => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.matches('[data-signin]')) signIn();
+  if (t.matches('[data-edit]')) { editing = true; render(); }
+  if (t.matches('[data-cancel]')) { editing = false; render(); }
+  if (t.matches('[data-delete]') && confirm('Delete your birth details from Tithi?')) {
+    try { await api('DELETE'); setBirth(null); render(); } catch (err) { say(err.message); }
+  }
+});
 
 // URL holds the view, date and place: #calendar?date=2026-10-01&city=Mumbai. No date means today.
 const VIEWS = { today: 'day', calendar: 'month', festivals: 'year' };
@@ -744,6 +873,7 @@ function render(anchor) {
     folio(p, fest);
     const cv = document.querySelector(".folio canvas.moon"); if (cv) drawMoon(cv, p.phase);
     $('out').innerHTML = views[v](p, fest);
+    wireBirth();
     $('say').textContent = $('out').querySelector('.brief, .title')?.textContent || '';
     if (anchor) $(anchor)?.scrollIntoView({ block: anchor === 'peek' ? 'nearest' : 'start' });
   }, 0);
@@ -793,7 +923,8 @@ document.addEventListener('keydown', e => {
 });
 
 // Google sign-in: OpenID Connect implicit flow from the browser; Google sends the ID token back in the URL hash.
-// ponytail: the token is decoded, not signature-checked, since nothing server-side trusts it yet. Verify it in the Worker once something does.
+// The page only decodes the token; worker.js verifies it on every /api call.
+// ponytail: Google ID tokens last an hour and there's no refresh, so saving later asks for a fresh sign-in. Add a Worker session cookie if that grates.
 const GOOGLE_CLIENT_ID = '431319218609-p82uavf9k38ujoo6he33qrd4vj6dh2em.apps.googleusercontent.com'; // Google Cloud console: Web client, redirect URIs https://tithi.agenticrabbit.com/ and http://localhost:8779/
 let user = store.get('user');
 function signIn() {
@@ -809,7 +940,7 @@ function returned() { // #state=…&id_token=… or #state=…&error=…
   try {
     const c = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(q.get('id_token').split('.')[1].replace(/-/g, '+').replace(/_/g, '/')), ch => ch.charCodeAt(0))));
     if (q.get('state') === want?.state && c.nonce === want.nonce && c.aud === GOOGLE_CLIENT_ID && /^(https:\/\/)?accounts\.google\.com$/.test(c.iss) && c.exp * 1000 > Date.now())
-      store.set('user', user = { name: c.given_name || c.name || c.email, email: c.email, picture: c.picture });
+      store.set('user', user = { name: c.given_name || c.name || c.email, email: c.email, picture: c.picture, token: q.get('id_token'), exp: c.exp }); // the token authorises /api for its hour
   } catch {}
   history.replaceState(null, '', location.pathname + (user ? '#today' : ''));
 }
@@ -818,9 +949,14 @@ function showUser() {
   $('account').textContent = user ? `Sign out · ${user.name}` : '';
   $('account').hidden = !user;
 }
-$('google').onclick = $('account').onclick = () => { if (!user) return signIn(); store.set('user', user = null); showUser(); };
+$('google').onclick = $('account').onclick = () => {
+  if (!user) return signIn();
+  store.set('user', user = null); setBirth(null); showUser();
+  if (location.hash.slice(1)) render();
+};
 returned();
 showUser();
+syncBirth();
 route();
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "39289d9b86624934a8e44069b40f2725"}'></script>

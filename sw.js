@@ -1,6 +1,6 @@
 // Offline support. Our own files: network first, so a deploy shows on the next visit; cache when offline.
 // CDN script and fonts: cache first, they don't change at a given URL.
-const CACHE = 'tithi-v3';
+const CACHE = 'tithi-v4';
 const CORE = ['./', 'panchang.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/astronomy-engine@2/astronomy.browser.min.js'];
 
@@ -11,7 +11,7 @@ self.addEventListener('activate', e => e.waitUntil((async () => {
 })()));
 self.addEventListener('fetch', e => {
   const { request } = e, url = new URL(request.url);
-  if (request.method !== 'GET' || url.hostname.startsWith('geocoding-api') || url.hostname.endsWith('cloudflareinsights.com')) return; // city search and visit counts need the network anyway
+  if (request.method !== 'GET' || url.hostname.startsWith('geocoding-api') || url.hostname.endsWith('cloudflareinsights.com') || url.pathname.startsWith('/api/')) return; // city search, visit counts and birth details need the network
   e.respondWith(caches.open(CACHE).then(async cache => {
     const save = r => { if (r.ok || r.type === 'opaque') cache.put(request, r.clone()); return r; };
     if (url.origin === location.origin) {

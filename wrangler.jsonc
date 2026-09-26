@@ -1,7 +1,9 @@
-// Cloudflare Worker serving the site as static assets. Pushing to main deploys (Workers Builds).
+// Cloudflare Worker: static assets, plus worker.js for /api/* only. Pushing to main deploys (Workers Builds).
 {
   "name": "tithi",
+  "main": "worker.js",
   "compatibility_date": "2026-09-26",
-  "assets": { "directory": "." },
+  "assets": { "directory": ".", "run_worker_first": ["/api/*"] },
+  "kv_namespaces": [{ "binding": "BIRTH", "id": "bb7329706a3c4701b030fb39d1f72b55" }],
   "routes": [{ "pattern": "tithi.agenticrabbit.com", "custom_domain": true }]
 }
