@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f2ede4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161512" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Tithi">
+<title>Tithi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+<script>try { const t = JSON.parse(localStorage.getItem('theme')); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<style>
+  :root {
+    --paper: #f2ede4; --recess: #ebe5da; --ink: #1c1b19; --ink2: #5b574f; --muted: #948e83; --rule: #d8d1c4;
+    --sindoor: #c43d2b; --lit: #f2ede4; --unlit: #1c1b19;
+    --serif: "Instrument Serif", "Tiro Devanagari Hindi", Georgia, serif;
+    --sans: "Instrument Sans", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    color-scheme: light;
+  }
+  /* dark: follows the system unless the theme switch says otherwise */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme=light]) { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #80796e; --rule: #34312c;
+      --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; color-scheme: dark; }
+    :root:not([data-theme=light]) body::before { mix-blend-mode: screen; opacity: 0.12; }
+  }
+  :root[data-theme=dark] { --paper: #161512; --recess: #201e1b; --ink: #ebe5da; --ink2: #b5aea1; --muted: #80796e; --rule: #34312c;
+    --sindoor: #e2644f; --lit: #ebe5da; --unlit: #34312c; color-scheme: dark; }
+  :root[data-theme=dark] body::before { mix-blend-mode: screen; opacity: 0.12; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 400 0.9375rem/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+  /* paper fibre */
+  body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0 0.33 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  a { color: inherit; text-decoration: none; }
+  .mono, .label { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .label { color: var(--muted); }
+  em, .it { font-family: var(--serif); font-style: italic; font-weight: 400; }
+
+  .page { max-width: 1160px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; display: grid; grid-template-columns: 340px 1fr; gap: 4.5rem; }
+
+  /* left folio */
+  .folio { position: sticky; top: 2.5rem; align-self: start; }
+  .mark { display: flex; align-items: baseline; gap: 0.5rem; font-family: var(--serif); font-size: 1.5rem; }
+  .mark span { font-family: var(--mono); font-size: 0.625rem; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+  .dayno { font-family: var(--serif); font-size: 9.5rem; line-height: 0.8; letter-spacing: -0.04em; margin-top: 2.5rem; }
+  .folio .when { margin-top: 1rem; font-family: var(--serif); font-style: italic; font-size: 1.75rem; line-height: 1.1; }
+  .folio .moon { display: block; width: 150px; height: 150px; margin: 2.5rem 0 1.5rem; }
+  .folio .tithi { font-family: var(--serif); font-size: 2.5rem; line-height: 1; }
+  .folio .sub { color: var(--ink2); margin-top: 0.5rem; }
+  .fest { list-style: none; padding: 0; margin-top: 1.5rem; display: grid; gap: 0.375rem; }
+  .fest li { font-family: var(--serif); font-size: 1.25rem; line-height: 1.2; padding-left: 1.125rem; position: relative; }
+  .fest li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: var(--sindoor); }
+
+  .controls { margin-top: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule); display: grid; gap: 0.75rem; }
+  .controls .line { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  button, select, input { font: inherit; font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); background: none; border: 0; padding: 0.25rem 0; cursor: pointer; }
+  select, input { border-bottom: 1px solid var(--ink); border-radius: 0; appearance: none; }
+  input[type=date] { text-transform: none; }
+  #city { width: 11rem; }
+  button:hover, select:hover { color: var(--sindoor); }
+  #today::before { content: "●"; color: var(--sindoor); margin-right: 0.375rem; font-size: 0.5rem; vertical-align: 0.15em; }
+  :focus-visible { outline: 1px dashed var(--ink); outline-offset: 4px; }
+
+  /* right column */
+  nav { display: flex; gap: 1.75rem; flex-wrap: wrap; padding-bottom: 1.25rem; border-bottom: 1px solid var(--ink); }
+  nav a { font-family: var(--serif); font-size: 1.25rem; color: var(--muted); transition: color 150ms ease; }
+  nav a sup { font-family: var(--mono); font-size: 0.5625rem; margin-right: 0.25rem; letter-spacing: 0.06em; }
+  nav a:hover, nav a[aria-current] { color: var(--ink); }
+  nav a[aria-current] { font-style: italic; }
+
+  .chap { margin-top: 3.5rem; }
+  .chap > header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; }
+  .chap > header .label { min-width: 2rem; }
+  .chap h2 { font-family: var(--serif); font-weight: 400; font-size: 2.25rem; line-height: 1; }
+  .chap h2 em { color: var(--ink2); }
+  .title { font-family: var(--serif); font-weight: 400; font-size: clamp(3rem, 6vw, 4.5rem); line-height: 0.95; letter-spacing: -0.02em; margin-top: 3rem; }
+  .title + p { color: var(--ink2); margin-top: 1rem; max-width: 34rem; }
+
+  .lines > div { display: grid; grid-template-columns: 8.5rem 1fr auto; gap: 1rem; align-items: baseline; padding: 0.75rem 0; border-top: 1px solid var(--rule); }
+  .lines > div:last-child { border-bottom: 1px solid var(--rule); }
+  .lines .k { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .lines .v { font-family: var(--serif); font-size: 1.375rem; line-height: 1.2; }
+  .lines .v small { display: block; font-family: var(--sans); font-size: 0.8125rem; color: var(--ink2); margin-top: 0.125rem; }
+  .lines .t { font-family: var(--mono); font-size: 0.75rem; color: var(--ink2); text-align: right; white-space: nowrap; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  .cols h3 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.375rem; margin-bottom: 0.5rem; }
+  .cols .lines > div { grid-template-columns: 1fr auto; }
+
+  svg.chart { display: block; width: 100%; height: auto; overflow: visible; }
+  svg.chart text { font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; fill: var(--ink2); }
+  .caption { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+  .caption div { display: grid; }
+  .caption b { font-family: var(--serif); font-weight: 400; font-size: 1.625rem; line-height: 1.1; }
+
+  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .cal .wd { padding: 0.625rem 0.5rem; border-bottom: 1px solid var(--rule); }
+  .cal a { text-align: left; display: grid; align-content: start; gap: 0.125rem; min-height: 6.5rem; padding: 0.625rem 0.5rem; border-bottom: 1px solid var(--rule); position: relative; transition: background 150ms ease; }
+  .cal a:hover { background: var(--recess); color: inherit; }
+  .cal a.sel { background: var(--recess); }
+  .cal .n { font-family: var(--serif); font-size: 2rem; line-height: 1; width: fit-content; position: relative; }
+  .cal .today .n::after { content: ""; position: absolute; inset: -0.2em -0.35em; border: 1px solid var(--sindoor); border-radius: 50%; transform: rotate(-8deg); }
+  .cal .tt { font-family: var(--mono); font-size: 0.5625rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 0.375rem; }
+  .cal .f { font-family: var(--serif); font-style: italic; font-size: 0.9375rem; line-height: 1.15; color: var(--sindoor); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .cal svg { position: absolute; top: 0.75rem; right: 0.5rem; }
+
+  .ledger > a, .ledger > div { display: grid; grid-template-columns: 4.5rem 1fr auto; gap: 1rem; align-items: baseline; padding: 0.75rem 0; border-top: 1px solid var(--rule); transition: padding 200ms ease; }
+  .ledger > :last-child { border-bottom: 1px solid var(--rule); }
+  .ledger .d { font-family: var(--serif); font-size: 2rem; line-height: 1; }
+  .ledger .d small { font-family: var(--mono); font-size: 0.5625rem; letter-spacing: 0.06em; color: var(--muted); margin-left: 0.25rem; text-transform: uppercase; }
+  .ledger .nm { font-family: var(--serif); font-size: 1.375rem; line-height: 1.2; }
+  .ledger a:hover { padding-left: 0.5rem; }
+  .ledger a:hover .nm { font-style: italic; }
+  .ledger .now { position: relative; }
+  .ledger .now::before { content: ""; position: absolute; left: -1rem; top: 0; bottom: 0; width: 2px; background: var(--sindoor); }
+  .ledger .now .nm { font-style: italic; }
+  .ledger .q { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .ledger .q.avoid { color: var(--sindoor); }
+  .time { font-family: var(--mono); font-size: 0.75rem; color: var(--ink2); white-space: nowrap; }
+  .ledger.times > div { grid-template-columns: 9.5rem 1fr auto; }
+
+  /* today: the answer first */
+  .brief { font-family: var(--serif); font-size: clamp(1.75rem, 3.2vw, 2.375rem); line-height: 1.15; margin-top: 3rem; max-width: 40rem; }
+  .brief em { color: var(--sindoor); }
+  .nowline { margin-top: 1.25rem; display: flex; gap: 0.5rem 1.5rem; flex-wrap: wrap; color: var(--ink2); }
+  .nowline span::before { content: "●"; color: var(--sindoor); margin-right: 0.5rem; font-size: 0.5rem; vertical-align: 0.15em; }
+  .ahead { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); margin-top: 2.5rem; }
+  .ahead a { display: grid; align-content: start; gap: 0.25rem; padding: 0.875rem 1rem 1rem 0; transition: background 150ms ease, padding 200ms ease; }
+  .ahead a + a { padding-left: 1rem; border-left: 1px solid var(--rule); }
+  .ahead a:hover { background: var(--recess); }
+  .ahead b { font-family: var(--serif); font-weight: 400; font-size: 1.375rem; line-height: 1.15; }
+  .ahead a:hover b { font-style: italic; }
+  .ahead .time { font-size: 0.6875rem; }
+  .term { font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; padding: 0; text-align: left; text-decoration: underline dotted var(--muted); text-underline-offset: 0.25em; }
+  .term:hover { color: var(--sindoor); }
+  .note { margin: auto auto 2rem; width: min(26rem, calc(100vw - 2rem)); padding: 1.25rem 1.5rem; background: var(--paper); color: var(--ink); border: 1px solid var(--ink); font: 400 0.9375rem/1.55 var(--sans); text-transform: none; letter-spacing: 0; }
+  .note::backdrop { background: rgb(28 27 25 / 0.15); }
+  .note b { display: block; font: 400 1.5rem/1.1 var(--serif); margin-bottom: 0.5rem; }
+  .chap > .sub { color: var(--ink2); margin: -0.75rem 0 0.5rem; max-width: 34rem; }
+  .chap h3 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.375rem; margin: 1.5rem 0 0.5rem; }
+  .dayno { display: block; padding: 0; color: inherit; }
+  .sr { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  #out.still > * { animation: none; }
+  .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; margin-top: 1rem; font-size: 0.8125rem; color: var(--ink2); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .legend i { font-family: var(--serif); font-size: 1rem; color: var(--sindoor); }
+  .legend .ring, .legend .shade { width: 1rem; height: 1rem; }
+  .legend .ring { border: 1px solid var(--sindoor); border-radius: 50%; }
+  .legend .shade { background: var(--recess); }
+  .more { margin-top: 1.25rem; }
+  .more a { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--ink); padding-bottom: 0.125rem; }
+  .more a:hover { color: var(--sindoor); border-color: var(--sindoor); }
+  .colophon { margin-top: 5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; }
+  .note.wide { margin: auto; width: min(40rem, calc(100vw - 2rem)); max-height: 85vh; overflow: auto; }
+  .note.wide h3 { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; margin: 1.25rem 0 0.25rem; }
+  .note.wide p + p { margin-top: 0.5rem; }
+  .empty { font-family: var(--serif); font-style: italic; font-size: 1.375rem; color: var(--muted); margin-top: 3rem; }
+  #out > * { animation: ink 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  #out > *:nth-child(2) { animation-delay: 70ms; }
+  #out > *:nth-child(n+3) { animation-delay: 140ms; }
+  @keyframes ink { from { opacity: 0; filter: blur(3px); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 1.5rem; }
+    .folio { position: static; }
+    .folio-body { display: grid; grid-template-columns: 1fr auto; column-gap: 1rem; }
+    .folio-body > .fest, .folio-body > .sub { grid-column: 1 / -1; }
+    .dayno { font-size: 6.5rem; margin-top: 2rem; }
+    .folio .moon { grid-column: 2; grid-row: 1 / span 2; width: 110px; height: 110px; margin: 2rem 0 0; }
+    .folio .tithi { font-size: 2rem; margin-top: 1.5rem; }
+    /* on Today the summary sentence already says this */
+    [data-view=today] .folio :is(.tithi, .sub, .fest) { display: none; }
+    [data-view=today] .brief { margin-top: 0; }
+  }
+  @media (max-width: 600px) {
+    .page { padding-left: 1rem; padding-right: 1rem; }
+    .page { padding-bottom: 7rem; }
+    .note { margin-bottom: 5rem; }
+    nav { position: fixed; z-index: 2; left: 0; right: 0; bottom: 0; background: var(--paper); border: 0; border-top: 1px solid var(--ink); padding: 0.625rem 1rem calc(0.625rem + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; text-align: center; }
+    .ahead { grid-template-columns: 1fr 1fr; }
+    .ahead a:nth-child(3) { padding-left: 0; border-left: 0; }
+    .ahead a:nth-child(n+3) { border-top: 1px solid var(--rule); }
+    .cols { grid-template-columns: 1fr; }
+    .lines > div { grid-template-columns: 1fr auto; }
+    .lines .k { grid-column: 1 / -1; }
+    .cal a { min-height: 4.25rem; padding: 0.375rem 0.25rem; }
+    .cal .n { font-size: 1.375rem; }
+    .cal .f, .cal .tt { display: none; }
+    .cal svg { top: auto; bottom: 0.5rem; right: 0.25rem; }
+    .ledger > a, .ledger > div, .ledger.times > div { grid-template-columns: 3.5rem 1fr; }
+    .ledger .q, .ledger .time { grid-column: 2; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="folio">
+    <a class="mark" id="home" href="#today">Tithi <span>a panchang</span></a>
+    <div class="controls">
+      <div class="line"><button id="prev">← Prev</button><button id="today">Today</button><button id="next">Next →</button></div>
+      <div class="line"><input id="city" list="places" aria-label="City" autocomplete="off" spellcheck="false"><datalist id="places"></datalist><button id="locate">Locate me</button></div>
+    </div>
+    <input type="date" id="date" class="sr" tabindex="-1" aria-hidden="true">
+    <div class="folio-body" id="folio"></div>
+  </aside>
+  <main>
+    <nav id="nav" aria-label="Views">
+      <a data-v="today"><sup>I</sup>Today</a><a data-v="calendar"><sup>II</sup>Calendar</a><a data-v="festivals"><sup>III</sup>Festivals</a>
+    </nav>
+    <div id="out" aria-live="polite"></div>
+    <footer class="colophon"><button id="lang"></button><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button></footer>
+    <div popover id="method" class="note wide">
+      <b>How this is worked out</b>
+      <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables.</p>
+      <h3>Sun and moon</h3>
+      <p>Positions come from astronomy-engine, a precise open-source ephemeris. Sidereal longitudes use the Lahiri ayanamsa, approximated linearly, which is good to well under a minute of time for panchang purposes.</p>
+      <p>The day runs from sunrise to the next sunrise. Sunrise is when the sun’s upper edge clears a sea-level horizon, with standard refraction. Hills, buildings and altitude can shift it by a few minutes.</p>
+      <h3>The five limbs</h3>
+      <p>Tithi is each 12° the moon gains on the sun; karana is half of that. Nakshatra is the moon’s sidereal longitude in 27 parts; yoga is the sun’s and moon’s added together, also in 27. Each is named as it stands at sunrise, with the time it ends.</p>
+      <p>Months are amanta, new moon to new moon, named after the rashi the sun enters during the month. A month in which the sun changes no rashi is adhika. Purnimanta months are the same, shifted by a fortnight.</p>
+      <h3>Hours</h3>
+      <p>Rahu kalam, Yamaganda and Gulika are eighths of the daytime; choghadiya are eighths of the day and of the night; hora are twelfths of each; a muhurta is a fifteenth.</p>
+      <h3>Festivals</h3>
+      <p>A festival falls on the day its tithi holds at the time the observance is kept: sunrise for most, including Janmashtami; midday for Ganesh Chaturthi and Rama Navami; afternoon for Dussehra and Bhai Dooj; dusk for Holika Dahan, Diwali, Dhanteras, Sharad Purnima and Pradosh; midnight for Shivaratri; moonrise for Karwa Chauth and Sankashti. If it holds at that time on two days, the first is taken; if on neither, the day whose sunrise it covers. A sankranti after sunset is kept the next day.</p>
+      <p>These dates match Drik Panchang for New Delhi across 2025–2027 and for London in 2026, with one exception: in 2026 Drik moves Holika Dahan and Holi a day later for Delhi, most likely because of that evening’s lunar eclipse. Eclipses, bhadra timings, regional customs and nakshatra conditions are not modelled, so a family or temple calendar can differ by a day. When it matters, check with them.</p>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2/astronomy.browser.min.js"></script>
+<script src="panchang.js"></script>
+<script>
+const CITIES = [
+  ['New Delhi', 28.6139, 77.2090, 'Asia/Kolkata'], ['Mumbai', 19.0760, 72.8777, 'Asia/Kolkata'],
+  ['Kolkata', 22.5726, 88.3639, 'Asia/Kolkata'], ['Chennai', 13.0827, 80.2707, 'Asia/Kolkata'],
+  ['Bengaluru', 12.9716, 77.5946, 'Asia/Kolkata'], ['Hyderabad', 17.3850, 78.4867, 'Asia/Kolkata'],
+  ['Ahmedabad', 23.0225, 72.5714, 'Asia/Kolkata'], ['Pune', 18.5204, 73.8567, 'Asia/Kolkata'],
+  ['Jaipur', 26.9124, 75.7873, 'Asia/Kolkata'], ['Lucknow', 26.8467, 80.9462, 'Asia/Kolkata'],
+  ['Varanasi', 25.3176, 82.9739, 'Asia/Kolkata'], ['Ujjain', 23.1765, 75.7885, 'Asia/Kolkata'],
+  ['Kathmandu', 27.7172, 85.3240, 'Asia/Kathmandu'], ['Singapore', 1.3521, 103.8198, 'Asia/Singapore'],
+  ['Dubai', 25.2048, 55.2708, 'Asia/Dubai'], ['London', 51.5074, -0.1278, 'Europe/London'],
+  ['New York', 40.7128, -74.0060, 'America/New_York'], ['Toronto', 43.6532, -79.3832, 'America/Toronto'],
+  ['San Francisco', 37.7749, -122.4194, 'America/Los_Angeles'], ['Sydney', -33.8688, 151.2093, 'Australia/Sydney'],
+].map(([name, lat, lon, tz]) => ({ name, lat, lon, tz }));
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const GLYPH = { Sun: '☉', Moon: '☽', Mars: '♂', Mercury: '☿', Jupiter: '♃', Venus: '♀', Saturn: '♄' };
+const $ = id => document.getElementById(id);
+// Hindi names, shown when lang is 'hi'. Whole names first, then word by word.
+const HI_FULL = {
+  'Purva Phalguni': 'पूर्वा फाल्गुनी', 'Uttara Phalguni': 'उत्तरा फाल्गुनी', 'Purva Ashadha': 'पूर्वाषाढ़ा', 'Uttara Ashadha': 'उत्तराषाढ़ा',
+  'Purva Bhadrapada': 'पूर्वा भाद्रपद', 'Uttara Bhadrapada': 'उत्तरा भाद्रपद', Jyeshtha: 'ज्येष्ठा', Shravana: 'श्रवण', Magha: 'मघा',
+  Ugadi: 'उगादी', 'Gudi Padwa': 'गुड़ी पड़वा', 'Chaitra Navratri': 'चैत्र नवरात्रि', 'Rama Navami': 'राम नवमी', 'Hanuman Jayanti': 'हनुमान जयंती',
+  'Akshaya Tritiya': 'अक्षय तृतीया', 'Buddha Purnima': 'बुद्ध पूर्णिमा', 'Nirjala Ekadashi': 'निर्जला एकादशी', 'Jagannath Rath Yatra': 'जगन्नाथ रथ यात्रा',
+  'Devshayani Ekadashi': 'देवशयनी एकादशी', 'Guru Purnima': 'गुरु पूर्णिमा', 'Nag Panchami': 'नाग पंचमी', 'Raksha Bandhan': 'रक्षा बंधन',
+  'Krishna Janmashtami': 'कृष्ण जन्माष्टमी', 'Ganesh Chaturthi': 'गणेश चतुर्थी', 'Anant Chaturdashi': 'अनंत चतुर्दशी', 'Pitru Paksha begins': 'पितृ पक्ष आरम्भ',
+  'Sarva Pitru Amavasya': 'सर्व पितृ अमावस्या', 'Sharad Navratri begins': 'शारदीय नवरात्रि आरम्भ', 'Durga Ashtami': 'दुर्गा अष्टमी', Dussehra: 'दशहरा',
+  'Sharad Purnima': 'शरद पूर्णिमा', 'Karwa Chauth': 'करवा चौथ', Dhanteras: 'धनतेरस', 'Narak Chaturdashi': 'नरक चतुर्दशी', Diwali: 'दीवाली',
+  'Lakshmi Puja': 'लक्ष्मी पूजा', 'Govardhan Puja': 'गोवर्धन पूजा', 'Bhai Dooj': 'भाई दूज', 'Chhath Puja': 'छठ पूजा', 'Dev Uthani Ekadashi': 'देवउठनी एकादशी',
+  'Kartik Purnima': 'कार्तिक पूर्णिमा', 'Guru Nanak Jayanti': 'गुरु नानक जयंती', 'Gita Jayanti': 'गीता जयंती', 'Mokshada Ekadashi': 'मोक्षदा एकादशी',
+  'Vasant Panchami': 'वसंत पंचमी', 'Maha Shivaratri': 'महा शिवरात्रि', 'Mauni Amavasya': 'मौनी अमावस्या', 'Holika Dahan': 'होलिका दहन', Holi: 'होली',
+  'Pradosh Vrat': 'प्रदोष व्रत', 'Sankashti Chaturthi': 'संकष्टी चतुर्थी', Baisakhi: 'बैसाखी', Pongal: 'पोंगल', 'Makar Sankranti': 'मकर संक्रांति',
+};
+const HI = Object.fromEntries(`Pratipada प्रतिपदा Dwitiya द्वितीया Tritiya तृतीया Chaturthi चतुर्थी Panchami पंचमी Shashthi षष्ठी Saptami सप्तमी Ashtami अष्टमी
+  Navami नवमी Dashami दशमी Ekadashi एकादशी Dwadashi द्वादशी Trayodashi त्रयोदशी Chaturdashi चतुर्दशी Purnima पूर्णिमा Amavasya अमावस्या Shukla शुक्ल Krishna कृष्ण
+  Ashwini अश्विनी Bharani भरणी Krittika कृत्तिका Rohini रोहिणी Mrigashira मृगशिरा Ardra आर्द्रा Punarvasu पुनर्वसु Pushya पुष्य Ashlesha आश्लेषा Hasta हस्त
+  Chitra चित्रा Swati स्वाति Vishakha विशाखा Anuradha अनुराधा Mula मूल Dhanishtha धनिष्ठा Shatabhisha शतभिषा Revati रेवती
+  Vishkambha विष्कम्भ Priti प्रीति Ayushman आयुष्मान Saubhagya सौभाग्य Shobhana शोभन Atiganda अतिगण्ड Sukarma सुकर्मा Dhriti धृति Shula शूल Ganda गण्ड
+  Vriddhi वृद्धि Dhruva ध्रुव Vyaghata व्याघात Harshana हर्षण Vajra वज्र Siddhi सिद्धि Vyatipata व्यतीपात Variyana वरीयान Parigha परिघ Shiva शिव Siddha सिद्ध
+  Sadhya साध्य Shubha शुभ Brahma ब्रह्म Indra इन्द्र Vaidhriti वैधृति Bava बव Balava बालव Kaulava कौलव Taitila तैतिल Garaja गर Vanija वणिज Vishti विष्टि
+  Kimstughna किंस्तुघ्न Shakuni शकुनि Chatushpada चतुष्पद Naga नाग Mesha मेष Vrishabha वृषभ Mithuna मिथुन Karka कर्क Simha सिंह Kanya कन्या Tula तुला
+  Vrishchika वृश्चिक Dhanu धनु Makara मकर Kumbha कुम्भ Meena मीन Sankranti संक्रांति Vasanta वसन्त Grishma ग्रीष्म Varsha वर्षा Sharad शरद Hemanta हेमन्त
+  Shishira शिशिर Uttarayana उत्तरायण Dakshinayana दक्षिणायन Ravivara रविवार Somavara सोमवार Mangalavara मंगलवार Budhavara बुधवार Guruvara गुरुवार
+  Shukravara शुक्रवार Shanivara शनिवार Udveg उद्वेग Char चर Labh लाभ Amrit अमृत Kaal काल Shubh शुभ Rog रोग Sun सूर्य Moon चन्द्र Mars मंगल
+  Mercury बुध Jupiter गुरु Venus शुक्र Saturn शनि Adhika अधिक`.trim().split(/\s+/).reduce((a, w, i, l) => i % 2 ? a : [...a, [w, l[i + 1]]], []));
+const MASA_HI = { Chaitra: 'चैत्र', Vaishakha: 'वैशाख', Jyeshtha: 'ज्येष्ठ', Ashadha: 'आषाढ़', Shravana: 'श्रावण', Bhadrapada: 'भाद्रपद', Ashwin: 'आश्विन',
+  Kartika: 'कार्तिक', Margashirsha: 'मार्गशीर्ष', Pausha: 'पौष', Magha: 'माघ', Phalguna: 'फाल्गुन', Adhika: 'अधिक' };
+const hi = s => lang !== 'hi' || typeof s !== 'string' ? s
+  : HI_FULL[s] || s.split(' · ').map(part => HI_FULL[part] || part.replace(/[A-Za-z]+/g, w => HI[w] || w)).join(' · ');
+const mo = s => esc(lang === 'hi' ? s.replace(/[A-Za-z]+/g, w => MASA_HI[w] || w) : s); // months differ from same-named nakshatras
+const esc = s => String(hi(s)).replace(/[&<>"]/g, c => '&#' + c.charCodeAt(0) + ';');
+
+const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+let loc = store.get('loc') || CITIES[0];
+let lang = store.get('lang') || 'en', system = store.get('system') || 'amanta';
+let sel; // {y, m, d} in loc's time zone
+
+function partsIn(date, tz) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(date).map(x => [x.type, +x.value]));
+  return { y: p.year, m: p.month - 1, d: p.day };
+}
+const shift = (s, n) => { const t = new Date(Date.UTC(s.y, s.m, s.d + n)); return { y: t.getUTCFullYear(), m: t.getUTCMonth(), d: t.getUTCDate() }; };
+const iso = s => `${s.y}-${String(s.m + 1).padStart(2, '0')}-${String(s.d).padStart(2, '0')}`;
+function time(date, withDay = true) {
+  if (!date) return '—';
+  let s = date.toLocaleTimeString('en-IN', { timeZone: loc.tz, hour: 'numeric', minute: '2-digit' }).replace(' ', ' ');
+  if (withDay && iso(partsIn(date, loc.tz)) !== iso(sel)) s += ' · ' + date.toLocaleDateString('en-IN', { timeZone: loc.tz, day: 'numeric', month: 'short' });
+  return s;
+}
+const range = (r, withDay) => `${time(r.start, withDay)} – ${time(r.end, withDay)}`;
+const chap = (n, title, body, id) => `<section class="chap"${id ? ` id="${id}"` : ''}><header><span class="label">${n}</span><h2>${title}</h2></header>${body}</section>`;
+const deg = x => `${Math.floor(x % 30)}°${String(Math.floor((x % 1) * 60)).padStart(2, '0')}′`;
+
+// Small calendar moon: flat disc lit by elongation e (0 new, 180 full), waxing lit on the right.
+function moon(e, size) {
+  const r = 10, rx = (r * Math.abs(Math.cos(e * Math.PI / 180))).toFixed(2), waxing = e < 180;
+  const outer = waxing ? `M0 ${-r}A${r} ${r} 0 0 1 0 ${r}` : `M0 ${-r}A${r} ${r} 0 0 0 0 ${r}`;
+  const sweep = waxing ? (e > 90 ? 1 : 0) : (e < 270 ? 0 : 1);
+  return `<svg width="${size}" height="${size}" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="${r}" fill="var(--unlit)"/><path d="${outer}A${rx} ${r} 0 0 ${sweep} 0 ${-r}Z" fill="var(--lit)"/><circle r="${r}" fill="none" stroke="var(--ink)" stroke-width="1.2"/></svg>`;
+}
+
+// Large moon, rendered per pixel like a mezzotint: a lit sphere with the real maria,
+// crater texture, a soft terminator and faint earthshine on the night side.
+const MARIA = [ // [x, y, radius, depth] on the disc, x right, y down
+  [-0.30, -0.45, 0.24, 0.9], [0.14, -0.36, 0.15, 0.85], [0.30, -0.08, 0.19, 0.85], [0.64, -0.28, 0.10, 0.9],
+  [0.56, 0.16, 0.13, 0.7], [0.36, 0.33, 0.09, 0.7], [-0.20, 0.36, 0.15, 0.6], [-0.60, -0.05, 0.30, 0.75],
+  [-0.46, 0.42, 0.09, 0.7], [-0.05, -0.12, 0.08, 0.5], [0.02, 0.05, 0.10, 0.35],
+];
+const hash = (x, y) => { const h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return h - Math.floor(h); };
+function vnoise(x, y) {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function drawMoon(cv, e) {
+  const css = cv.clientWidth || 150, S = Math.round(css * (window.devicePixelRatio || 1));
+  cv.width = cv.height = S;
+  const ctx = cv.getContext('2d'), img = ctx.createImageData(S, S), px = img.data;
+  const a = e * Math.PI / 180, Lx = Math.sin(a), Lz = -Math.cos(a);   // sun direction; viewer on +z
+  const R = S / 2 - 1, night = [28, 27, 25], day = [250, 247, 241];
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    const nx = (x + 0.5 - S / 2) / R, ny = (y + 0.5 - S / 2) / R, r2 = nx * nx + ny * ny;
+    const edge = Math.min(1, (1 - Math.sqrt(r2)) * R + 0.5);
+    if (edge <= 0) continue;
+    const nz = Math.sqrt(Math.max(0, 1 - r2));
+    // surface: maria, crater mottling, Tycho
+    let albedo = 1;
+    for (const [mx, my, mr, md] of MARIA) albedo -= 0.42 * md * Math.exp(-((nx - mx) ** 2 + (ny - my) ** 2) / (1.3 * mr * mr));
+    const f = 3 / (0.35 + nz); // compress texture toward the limb, as on a sphere
+    albedo += 0.07 * (vnoise(nx * f * 4, ny * f * 4) - 0.5) + 0.09 * (vnoise(nx * f * 16, ny * f * 16) - 0.5);
+    albedo += 0.25 * Math.exp(-((nx + 0.1) ** 2 + (ny - 0.74) ** 2) / 0.003);
+    albedo = Math.min(1, Math.max(0.25, albedo));
+    // light: soft terminator, gentle limb darkening
+    const lambert = nx * Lx + nz * Lz;
+    const lit = Math.min(1, Math.max(0, (lambert + 0.03) / 0.12)) * (0.78 + 0.22 * Math.max(0, lambert)) * (0.88 + 0.12 * nz);
+    const earthshine = 0.07 * albedo;
+    let b = Math.max(earthshine, lit * albedo);
+    b = Math.min(1, Math.max(0, b + (hash(x, y) - 0.5) * 0.07));   // print grain
+    const i = (y * S + x) * 4;
+    for (let c = 0; c < 3; c++) px[i + c] = night[c] + (day[c] - night[c]) * b;
+    px[i + 3] = 255 * edge;
+  }
+  ctx.putImageData(img, 0, 0);
+  ctx.beginPath(); ctx.arc(S / 2, S / 2, R - 0.5, 0, 2 * Math.PI);
+  ctx.strokeStyle = getComputedStyle(cv).getPropertyValue('--ink'); ctx.lineWidth = Math.max(1, S / 300); ctx.stroke();
+}
+
+// The sun's arc from sunrise to sunset, with the day's marked periods laid along it.
+function sunArc(p) {
+  const W = 600, x0 = 30, x1 = 570, base = 190, h = 150, len = p.sunset - p.sunrise;
+  const at = d => { const t = (d - p.sunrise) / len; return [x0 + (x1 - x0) * t, base - h * Math.sin(Math.PI * t)]; };
+  const path = (a, b) => { let s = ''; for (let k = 0; k <= 24; k++) { const [x, y] = at(new Date(+a + (b - a) * k / 24)); s += `${k ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; } return s; };
+  const marks = [['Rahu', p.rahu, 'var(--sindoor)', 3.5], ['Yamaganda', p.yamaganda, 'var(--ink)', 3.5], ['Gulika', p.gulika, 'var(--ink)', 3.5], ['Abhijit', p.abhijit, 'var(--ink)', 7]]
+    .sort((a, b) => a[1].start - b[1].start);
+  let s = `<svg class="chart" viewBox="0 0 ${W} 225" role="img" aria-label="Sun's path from ${time(p.sunrise)} to ${time(p.sunset)}">
+    <line x1="0" y1="${base}" x2="${W}" y2="${base}" stroke="var(--ink)" stroke-width="0.75"/>
+    <path d="${path(p.sunrise, p.sunset)}" fill="none" stroke="var(--muted)" stroke-width="0.75" stroke-dasharray="2 3"/>`;
+  for (let k = 1; k < 8; k++) { const [x, y] = at(new Date(+p.sunrise + len * k / 8)); s += `<line x1="${x}" y1="${y - 4}" x2="${x}" y2="${y + 4}" stroke="var(--muted)" stroke-width="0.75"/>`; }
+  marks.forEach(([name, r, color, w], i) => {
+    const [mx, my] = at(new Date((+r.start + +r.end) / 2)), lift = i % 2 ? 34 : 18;
+    s += `<path d="${path(r.start, r.end)}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="butt"/>
+      <line x1="${mx}" y1="${my - 5}" x2="${mx}" y2="${my - lift + 4}" stroke="${color}" stroke-width="0.5"/>
+      <text x="${mx}" y="${my - lift}" text-anchor="middle" style="fill:${color}">${name.toUpperCase()}</text>`;
+  });
+  const now = new Date();
+  if (now > p.sunrise && now < p.sunset) { const [x, y] = at(now); s += `<circle cx="${x}" cy="${y}" r="7" fill="var(--paper)" stroke="var(--ink)"/><circle cx="${x}" cy="${y}" r="2" fill="var(--ink)"/>`; }
+  s += `<text x="${x0}" y="${base + 20}" text-anchor="middle">RISE</text><text x="${W / 2}" y="${base + 20}" text-anchor="middle">MIDDAY</text><text x="${x1}" y="${base + 20}" text-anchor="middle">SET</text></svg>`;
+  return s;
+}
+
+// The moon's road: the ecliptic unrolled, 12 rashis above, 27 nakshatras below.
+function moonRoad(p) {
+  const W = 600, X = lon => 10 + (W - 20) * lon / 360;
+  let s = `<svg class="chart" viewBox="0 0 ${W} 120" role="img" aria-label="Moon at ${deg(p.moonLon)} ${esc(p.moonRashi[0].name)}, sun in ${esc(p.sunRashi)}">
+    <line x1="10" y1="60" x2="${W - 10}" y2="60" stroke="var(--ink)" stroke-width="0.75"/>`;
+  Panchang.RASHI.forEach((n, i) => {
+    s += `<line x1="${X(i * 30)}" y1="30" x2="${X(i * 30)}" y2="60" stroke="var(--rule)"/><text x="${X(i * 30 + 15)}" y="40" text-anchor="middle" style="font-size:7px">${n.slice(0, 4).toUpperCase()}</text>`;
+  });
+  for (let k = 0; k <= 27; k++) s += `<line x1="${X(k * 360 / 27)}" y1="60" x2="${X(k * 360 / 27)}" y2="${k % 9 ? 66 : 72}" stroke="var(--ink)" stroke-width="0.75"/>`;
+  const mx = X(p.moonLon), sx = X(p.sunLon);
+  s += `<line x1="${X(Math.floor(p.moonLon / (360 / 27)) * 360 / 27)}" y1="60" x2="${X((Math.floor(p.moonLon / (360 / 27)) + 1) * 360 / 27)}" y2="60" stroke="var(--sindoor)" stroke-width="3"/>
+    <circle cx="${sx}" cy="60" r="5" fill="var(--ink)"/><text x="${sx}" y="18" text-anchor="middle">SUN</text><line x1="${sx}" y1="22" x2="${sx}" y2="53" stroke="var(--ink)" stroke-width="0.5" stroke-dasharray="1 2"/>
+    <circle cx="${mx}" cy="60" r="5" fill="var(--paper)" stroke="var(--ink)"/><text x="${mx}" y="92" text-anchor="middle">MOON · ${esc(p.nakshatra[0].name.toUpperCase())}</text>
+    <line x1="${mx}" y1="66" x2="${mx}" y2="83" stroke="var(--ink)" stroke-width="0.5" stroke-dasharray="1 2"/></svg>`;
+  return s;
+}
+
+// Month of brief() entries with festivals, padded one day each side for festival rules.
+function monthBriefs(y, m) {
+  const n = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  const b = Array.from({ length: n + 2 }, (_, k) => { const s = shift({ y, m, d: 1 }, k - 1); return Panchang.brief(s.y, s.m, s.d, loc); });
+  return b.slice(1, -1).map((cur, k) => ({ ...cur, fest: Panchang.festivals(b[k], cur, b[k + 2]) }));
+}
+const ROUTINE = ['Ekadashi', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi'];
+// Plain-language notes behind the jargon, opened with a native popover.
+const TERMS = {
+  Tithi: 'A lunar day: the time the moon takes to gain 12° on the sun. Thirty make a lunar month, and most festivals are set by them.',
+  Nakshatra: 'The lunar mansion: one of 27 equal slices of the sky the moon passes through, spending about a day in each.',
+  Yoga: 'The sun’s and moon’s longitudes added together and cut into 27. Consulted when choosing a good time.',
+  Karana: 'Half a tithi. Vishti, also called Bhadra, is avoided for new beginnings.',
+  Vara: 'The weekday, counted from sunrise to sunrise rather than midnight.',
+  'Brahma muhurta': 'The 48 minutes that end about 48 minutes before sunrise. Traditionally the best time for study, prayer and meditation.',
+  Abhijit: 'The muhurta around local noon. Considered good for most undertakings.',
+  'Rahu kalam': 'An eighth of the daytime ruled by Rahu, at a different point each weekday. Avoid starting anything new; work already under way can carry on.',
+  Yamaganda: 'An eighth of the daytime linked to Yama. Avoided for travel and new beginnings.',
+  'Gulika kalam': 'An eighth of the daytime ruled by Gulika. What starts now is said to repeat, so avoid it for anything you would not want again.',
+  'Dur muhurta': 'One or two 48-minute stretches of the day held to be inauspicious on this weekday.',
+  Samvat: 'The era the year is counted in. Vikram Samvat runs about 57 years ahead of the Gregorian year; Shaka about 78 behind.',
+  Month: 'Amanta months end at the new moon (used in the south and west); purnimanta months end at the full moon (used in the north).',
+  Ritu: 'One of six seasons, each two lunar months long.',
+  Ayana: 'The sun’s half-year: Uttarayana while it moves north after the winter solstice, Dakshinayana while it moves south.',
+};
+let termId = 0;
+const term = k => TERMS[k] ? `<button class="term" popovertarget="term${++termId}">${k}</button><span popover id="term${termId}" class="note"><b>${k}</b>${TERMS[k]}</span>` : k;
+const lines = rows => `<div class="lines">${rows.map(([k, v, t = '']) => `<div><span class="k">${term(k)}</span><span class="v">${v}</span><span class="t">${t}</span></div>`).join('')}</div>`;
+const limb = list => list.map((x, i) => i ? '' : esc(x.name) + (list[1] ? `<small>then ${esc(list[1].name)}${list[2] ? `, ${esc(list[2].name)}` : ''}</small>` : '')).join('');
+
+function periods(list, kind) {
+  const now = Date.now();
+  return `<div class="ledger times">${list.map(c => {
+    const cur = c.start <= now && now < c.end, q = kind ? kind(c) : '';
+    return `<div class="${cur ? 'now' : ''}" data-start="${+c.start}" data-end="${+c.end}" data-q="${q}"><span class="time">${range(c, false)}</span><span class="nm">${esc(c.name)}</span><span class="q ${q === 'avoid' ? 'avoid' : ''}">${cur ? 'now' : q}</span></div>`;
+  }).join('')}</div>`;
+}
+
+// Left folio: the selected date, moon and festivals. Controls above it are static.
+function folio(p, fest) {
+  const date = new Date(Date.UTC(sel.y, sel.m, sel.d));
+  $('folio').innerHTML = `
+    <button class="dayno" id="pick" title="Change date" aria-label="${sel.d}, change date">${sel.d}</button>
+    <div class="when">${date.toLocaleDateString('en-IN', { timeZone: 'UTC', weekday: 'long' })},<br>${MONTHS[sel.m]} ${sel.y}</div>
+    ${p ? `<canvas class="moon" role="img" aria-label="Moon, ${Math.round((1 - Math.cos(p.phase * Math.PI / 180)) * 50)}% lit"></canvas>` + `<div class="tithi">${esc(p.tithi[0].name)}</div><p class="sub">${esc(p.paksha)} paksha of ${mo(system === 'amanta' ? p.amanta : p.purnimanta)} · moon in ${esc(p.nakshatra[0].name)}</p>` : '<p class="sub">The sun does not rise here on this date.</p>'}
+    ${fest.length ? `<ul class="fest">${fest.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}`;
+  $('date').value = iso(sel);
+  const unit = VIEWS[v];
+  $('prev').setAttribute('aria-label', 'Previous ' + unit);
+  $('next').setAttribute('aria-label', 'Next ' + unit);
+}
+function fillCities() { if (document.activeElement !== $('city')) $('city').value = loc.name; }
+// City search: the built-in list plus Open-Meteo's geocoder (no key; only the typed text is sent).
+let found = [], timer;
+const label = c => c.label || c.name;
+function listPlaces(list) { found = list; $('places').innerHTML = list.map(c => `<option value="${esc(label(c))}">`).join(''); }
+listPlaces(CITIES);
+$('city').onfocus = e => e.target.select();
+$('city').oninput = e => {
+  const q = e.target.value.trim(), hit = found.find(c => label(c) === q);
+  if (hit) { e.target.blur(); return setLoc(hit); } // picked from the list
+  clearTimeout(timer);
+  if (q.length < 2) return listPlaces(CITIES);
+  timer = setTimeout(async () => {
+    const local = CITIES.filter(c => c.name.toLowerCase().startsWith(q.toLowerCase()));
+    try {
+      const r = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&name=' + encodeURIComponent(q))).json();
+      if ($('city').value.trim() !== q) return; // a newer search is on its way
+      listPlaces([...local, ...(r.results || []).filter(x => x.timezone).map(x => ({ name: x.name, label: [x.name, x.admin1, x.country].filter(Boolean).join(', '), lat: x.latitude, lon: x.longitude, tz: x.timezone }))]);
+    } catch { listPlaces(local); }
+  }, 250);
+};
+$('city').onchange = e => { const hit = found.find(c => label(c) === e.target.value.trim()); hit ? setLoc(hit) : (e.target.value = loc.name); };
+$('city').onblur = e => { e.target.value = loc.name; };
+$('prev').onclick = () => step(-1);
+$('next').onclick = () => step(1);
+$('today').onclick = () => go(v, null);
+$('date').onchange = e => { const [y, m, d] = e.target.value.split('-').map(Number); if (y) go(v, { y, m: m - 1, d }); };
+$('locate').onclick = () => navigator.geolocation.getCurrentPosition(
+  q => setLoc({ name: 'My location', lat: q.coords.latitude, lon: q.coords.longitude, tz: Intl.DateTimeFormat().resolvedOptions().timeZone }),
+  e => { $('out').innerHTML = `<p class="empty">Location unavailable: ${esc(e.message)}. Pick a city instead.</p>`; });
+
+const views = {
+  today(p, fest) {
+    if (!p) return '<p class="empty">No sunrise here today, so no panchang.</p>';
+    const q = c => ({ good: 'good', bad: 'avoid', neutral: 'neutral' })[c.kind];
+    const withGlyph = list => list.map(h => ({ ...h, name: `${GLYPH[h.name]}  ${h.name}` }));
+    return `<div id="live">${summary(p, fest)}</div>` + ahead()
+      + chap('01', 'The sun’s <em>path</em>', `${sunArc(p)}
+        <div class="caption">${[['Sunrise', p.sunrise], ['Sunset', p.sunset], ['Moonrise', p.moonrise], ['Moonset', p.moonset]].map(([k, v]) => `<div><span class="label">${k}</span><b>${time(v)}</b></div>`).join('')}</div>`)
+      + chap('02', 'Five <em>limbs</em>', lines([
+          ['Tithi', limb(p.tithi), `until ${time(p.tithi[0].end)}`],
+          ['Nakshatra', limb(p.nakshatra), `until ${time(p.nakshatra[0].end)}`],
+          ['Yoga', limb(p.yoga), `until ${time(p.yoga[0].end)}`],
+          ['Karana', limb(p.karana), `until ${time(p.karana[0].end)}`],
+          ['Vara', esc(p.vara), ''],
+        ]))
+      + chap('03', '<em>Good</em> hours, and others', `<div class="cols">
+          <div><h3>Favourable</h3><div class="lines">${[['Brahma muhurta', p.brahma], ['Abhijit', p.abhijit]].map(([k, r]) => `<div><span class="v" style="font-size:1.125rem">${term(k)}</span><span class="t">${range(r)}</span></div>`).join('')}</div></div>
+          <div><h3>Unfavourable</h3><div class="lines">${[['Rahu kalam', p.rahu], ['Yamaganda', p.yamaganda], ['Gulika kalam', p.gulika], ...p.durMuhurta.map(r => ['Dur muhurta', r])].map(([k, r]) => `<div><span class="v" style="font-size:1.125rem">${term(k)}</span><span class="t">${range(r)}</span></div>`).join('')}</div></div>
+        </div>`)
+      + chap('04', '<em>Choghadiya</em>', `<p class="sub">Day and night each cut into eight. Amrit, Shubh and Labh are good for beginnings; Char is fine for travel.</p><h3>By day</h3>${periods(p.choghadiya.day, q)}<h3>By night</h3>${periods(p.choghadiya.night, q)}`, 'choghadiya')
+      + chap('05', '<em>Hora</em>', `<p class="sub">Twenty-four planetary hours, the first ruled by the lord of the day.</p><h3>By day</h3>${periods(withGlyph(p.hora.slice(0, 12)))}<h3>By night</h3>${periods(withGlyph(p.hora.slice(12)))}`, 'hora')
+      + chap('06', 'The moon’s <em>road</em>', `${moonRoad(p)}
+        <div class="caption"><div><span class="label">Moon</span><b>${esc(p.moonRashi[0].name)} ${deg(p.moonLon)}</b></div><div><span class="label">Sun</span><b>${esc(p.sunRashi)} ${deg(p.sunLon)}</b></div><div><span class="label">Ayanamsa</span><b>Lahiri</b></div></div>`)
+      + chap('07', 'The <em>year</em>', lines([
+          ['Samvat', `${p.vikram} <small>Vikram · Shaka ${p.shaka}</small>`],
+          ['Month', system === 'amanta' ? `${mo(p.amanta)} <small>Amanta · ${mo(p.purnimanta)} purnimanta</small>` : `${mo(p.purnimanta)} <small>Purnimanta · ${mo(p.amanta)} amanta</small>`],
+          ['Ritu', esc(p.ritu)], ['Ayana', esc(p.ayana)],
+        ]));
+  },
+  calendar(p, fest) {
+    const days = monthBriefs(sel.y, sel.m), today = iso(partsIn(new Date(), loc.tz));
+    const blank = new Date(Date.UTC(sel.y, sel.m, 1)).getUTCDay();
+    const cells = days.map(b => {
+      const f = b.fest.find(x => !ROUTINE.includes(x)) || b.fest[0] || '';
+      const cls = [b.d === sel.d && 'sel', iso(b) === today && 'today'].filter(Boolean).join(' ');
+      return `<a href="${url('calendar', b)}" class="${cls}" aria-label="${b.d} ${MONTHS[b.m]}, ${b.paksha} ${b.tithiName}${f ? ', ' + esc(f) : ''}">
+        ${moon(b.tithi * 12 + 6, 12)}<span class="n">${b.d}</span><span class="tt">${b.paksha[0]} · ${esc(b.tithiName)}</span><span class="f">${esc(f)}</span></a>`;
+    }).join('');
+    const list = days.filter(b => b.fest.length).map(b => `<a href="${url('today', b)}"><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${b.fest.map(esc).join(', ')}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('');
+    return `<h1 class="title">${MONTHS[sel.m]} <em>${sel.y}</em></h1><p>Tithi at sunrise in ${esc(loc.name)}.</p>
+      <section class="chap"><div class="cal">${WD.map(w => `<span class="wd label">${w}</span>`).join('')}${'<span></span>'.repeat(blank)}${cells}</div>
+        <div class="legend"><span>${moon(90, 14)} Moon at sunrise</span><span><i>Diwali</i> Festival or vrat</span><span><b class="ring"></b> Today</span><span><b class="shade"></b> Selected</span></div></section>
+      ${p ? chap('—', `${new Date(Date.UTC(sel.y, sel.m, sel.d)).toLocaleDateString('en-IN', { timeZone: 'UTC', weekday: 'long' })}, <em>${sel.d} ${MONTHS[sel.m]}</em>`, lines([
+          ['Tithi', limb(p.tithi), `until ${time(p.tithi[0].end)}`],
+          ['Nakshatra', limb(p.nakshatra), `until ${time(p.nakshatra[0].end)}`],
+          ...(fest.length ? [['Observed', fest.map(esc).join(', ')]] : []),
+          ['Sun', `${time(p.sunrise)} – ${time(p.sunset)}`],
+          ['Rahu kalam', range(p.rahu)],
+        ]) + `<p class="more"><a href="${url('today', sel)}">Open the full day →</a></p>`, 'peek') : ''}
+      ${chap('—', 'Observances', list ? `<div class="ledger">${list}</div>` : '<p class="empty">None this month.</p>')}`;
+  },
+  festivals() {
+    const byMonth = Array.from({ length: 12 }, (_, m) => monthBriefs(sel.y, m).flatMap(b => b.fest.filter(f => !ROUTINE.includes(f)).map(f => [b, f])));
+    return `<h1 class="title">The festivals <em>of ${sel.y}</em></h1><p>Worked out for ${esc(loc.name)}. Monthly vrats such as Ekadashi and Pradosh sit on the month page.</p>
+      ${byMonth.map((list, m) => list.length ? chap(String(m + 1).padStart(2, '0'), `<em>${MONTHS[m]}</em>`, `<div class="ledger">${list.map(([b, f]) => `<a href="${url('today', b)}"><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${esc(f)}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('')}</div>`) : '').join('')}`;
+  },
+};
+
+const dur = ms => { const m = Math.max(1, Math.round(ms / 60000)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h` + (m % 60 ? ` ${m % 60} min` : ''); };
+const isToday = s => iso(s) === iso(partsIn(new Date(), loc.tz));
+
+// One sentence that answers the day; live countdowns when the selected day is today.
+function summary(p, fest) {
+  const now = new Date(), live = isToday(sel), t = p.tithi;
+  const i = live ? Math.max(0, t.findIndex(x => now < x.end)) : 0;
+  let s = `${esc(t[i].name)} until ${time(t[i].end)}${t[i + 1] ? `, then ${esc(t[i + 1].name)}` : ''}. `;
+  const named = fest.filter(f => f !== t[i].name); // don't repeat "Purnima" after the tithi
+  s += named.length ? `<em>${named.map(esc).join(', ')}</em>. ` : fest.length ? '' : 'No fast or festival. ';
+  const r = p.rahu;
+  s += !live ? `Rahu kalam ${range(r)}.` : now < r.start ? `Rahu kalam starts in ${dur(r.start - now)}.` : now < r.end ? `Rahu kalam now, ends in ${dur(r.end - now)}.` : 'Rahu kalam is over for today.';
+  if (!live) return `<p class="brief">${s}</p>`;
+  // before sunrise, the current periods belong to yesterday's night
+  const src = now < p.sunrise ? Panchang.day(...Object.values(shift(sel, -1)), loc) : p;
+  const within = list => list.find(c => c.start <= now && now < c.end);
+  const c = src && within([...src.choghadiya.day, ...src.choghadiya.night]), h = src && within(src.hora);
+  const kind = { good: 'good', bad: 'avoid', neutral: 'neutral' };
+  return `<p class="brief">${s}</p><p class="nowline mono">${c ? `<span>Now: ${esc(c.name)} (${kind[c.kind]}) until ${time(c.end, false)}</span>` : ''}${h ? `<span>Hora of ${esc(h.name)} until ${time(h.end, false)}</span>` : ''}</p>`;
+}
+
+// The next Ekadashi, Purnima, Amavasya and festival within two months.
+function ahead() {
+  const b = Array.from({ length: 62 }, (_, k) => { const s = shift(sel, k); return Panchang.brief(s.y, s.m, s.d, loc); });
+  const days = b.slice(1, -1).map((cur, k) => ({ ...cur, fest: Panchang.festivals(b[k], cur, b[k + 2]) }));
+  const find = test => { for (const d of days) { const f = d.fest.find(test); if (f) return [f, d]; } };
+  const items = [
+    find(f => f.includes('Ekadashi')), find(f => f.includes('Purnima')), find(f => /Amavasya|Diwali/.test(f)),
+    find(f => !ROUTINE.includes(f) && !/Ekadashi|Purnima|Amavasya|^\w+ Sankranti$/.test(f)),
+  ].filter(Boolean);
+  const from = Date.UTC(sel.y, sel.m, sel.d);
+  return `<section class="ahead" aria-label="Coming up">${items.map(([f, d]) => {
+    const n = Math.round((Date.UTC(d.y, d.m, d.d) - from) / 864e5);
+    return `<a href="${url('today', d)}"><span class="label">${n === 1 ? 'Tomorrow' : `In ${n} days`}</span><b>${esc(f)}</b><span class="time">${WD[d.weekday]}, ${d.d} ${MONTHS[d.m].slice(0, 3)}</span></a>`;
+  }).join('')}</section>`;
+}
+
+// URL holds the view, date and place: #calendar?date=2026-10-01&city=Mumbai. No date means today.
+const VIEWS = { today: 'day', calendar: 'month', festivals: 'year' };
+const OLD = { day: 'today', month: 'calendar', choghadiya: 'today', hora: 'today' };
+let v = 'today', last, shownToday;
+function url(nv, s = sel, l = loc) {
+  const q = new URLSearchParams();
+  if (s && iso(s) !== iso(partsIn(new Date(), l.tz))) q.set('date', iso(s));
+  if (CITIES.some(c => c.name === l.name)) q.set('city', l.name);
+  else { q.set('place', l.name); q.set('at', `${l.lat.toFixed(4)},${l.lon.toFixed(4)}`); q.set('tz', l.tz); }
+  return `#${nv}?${q}`;
+}
+function route() {
+  const before = sel;
+  const [h, q = ''] = location.hash.slice(1).split('?'), ps = new URLSearchParams(q);
+  const c = CITIES.find(x => x.name === ps.get('city')), at = (ps.get('at') || '').split(',').map(Number);
+  if (c) loc = c;
+  else if (at.length === 2 && at.every(Number.isFinite) && Math.abs(at[0]) <= 90 && !(at[0] === +loc.lat.toFixed(4) && at[1] === +loc.lon.toFixed(4))) {
+    let tz = ps.get('tz'); try { new Intl.DateTimeFormat('en', { timeZone: tz }); } catch { tz = loc.tz; }
+    loc = { name: ps.get('place') || `${at[0].toFixed(2)}°, ${at[1].toFixed(2)}°`, lat: at[0], lon: at[1], tz };
+  }
+  const d = /^(\d{4})-(\d\d)-(\d\d)$/.exec(ps.get('date'));
+  sel = d ? shift({ y: +d[1], m: d[2] - 1, d: +d[3] }, 0) : partsIn(new Date(), loc.tz);
+  const nv = Object.hasOwn(OLD, h) ? OLD[h] : Object.hasOwn(VIEWS, h) ? h : 'today';
+  if (nv !== v) scrollTo(0, 0);
+  const still = nv === v && v === 'calendar' && before && before.y === sel.y && before.m === sel.m; // same month: just move the selection
+  $('out').classList.toggle('still', still);
+  v = nv;
+  if (h !== v) history.replaceState(null, '', url(v));
+  render(h === 'choghadiya' || h === 'hora' ? h : still ? 'peek' : null);
+}
+function go(nv, s, replace) {
+  const u = url(nv, s);
+  if (u !== location.hash) replace ? location.replace(u) : (location.hash = u);
+}
+function render(anchor) {
+  for (const a of $('nav').children) { a.href = url(a.dataset.v); a.toggleAttribute('aria-current', a.dataset.v === v); }
+  $('home').href = url('today', null);
+  document.body.dataset.view = v;
+  const now = partsIn(new Date(), loc.tz);
+  shownToday = iso(now);
+  $('today').style.visibility = (v === 'festivals' ? sel.y === now.y : v === 'calendar' ? sel.y === now.y && sel.m === now.m : iso(sel) === iso(now)) ? 'hidden' : '';
+  $('lang').textContent = lang === 'hi' ? 'English names' : 'हिन्दी नाम';
+  $('system').textContent = `Months: ${system}`;
+  $('theme').textContent = `Theme: ${document.documentElement.dataset.theme || 'auto'}`;
+  for (const m of document.querySelectorAll('meta[name=theme-color]')) m.content = getComputedStyle(document.body).backgroundColor; // browser bar matches a forced theme
+  fillCities();
+  if (v === 'festivals') $('out').innerHTML = '<p class="empty">Reading the sky…</p>';
+  setTimeout(() => { // let the placeholder paint; the year view takes a moment
+    const p = Panchang.day(sel.y, sel.m, sel.d, loc);
+    const b = Panchang.brief(sel.y, sel.m, sel.d, loc);
+    const fest = Panchang.festivals(Panchang.brief(...Object.values(shift(sel, -1)), loc), b, Panchang.brief(...Object.values(shift(sel, 1)), loc));
+    last = { p, fest };
+    folio(p, fest);
+    const cv = document.querySelector(".folio canvas.moon"); if (cv) drawMoon(cv, p.phase);
+    $('out').innerHTML = views[v](p, fest);
+    if (anchor) $(anchor)?.scrollIntoView({ block: anchor === 'peek' ? 'nearest' : 'start' });
+  }, 0);
+}
+function step(n) {
+  const t = new Date(Date.UTC(sel.y, sel.m + n, 1));
+  go(v, v === 'calendar' ? { y: t.getUTCFullYear(), m: t.getUTCMonth(), d: 1 } : v === 'festivals' ? { y: sel.y + n, m: 0, d: 1 } : shift(sel, n), true);
+}
+function setLoc(l) { loc = l; store.set('loc', l); go(v, sel); }
+
+addEventListener('hashchange', route);
+// Keep the page current: roll over at midnight when showing today, move the 'now' markers, refresh the summary.
+setInterval(() => {
+  if (iso(partsIn(new Date(), loc.tz)) !== shownToday && !new URLSearchParams(location.hash.split('?')[1]).has('date')) return route();
+  const now = Date.now();
+  for (const r of document.querySelectorAll('[data-start]')) {
+    const on = +r.dataset.start <= now && now < +r.dataset.end;
+    r.classList.toggle('now', on);
+    r.querySelector('.q').textContent = on ? 'now' : r.dataset.q;
+  }
+  const el = $('live'); if (el && last?.p) el.innerHTML = summary(last.p, last.fest);
+}, 30000);
+$('folio').onclick = e => { if (e.target.closest('#pick')) try { $('date').showPicker(); } catch { $('date').focus(); } };
+$('lang').onclick = () => { lang = lang === 'hi' ? 'en' : 'hi'; store.set('lang', lang); render(); };
+$('system').onclick = () => { system = system === 'amanta' ? 'purnimanta' : 'amanta'; store.set('system', system); render(); };
+matchMedia('(prefers-color-scheme: dark)').onchange = () => render(); // the canvas moon's outline reads the theme
+$('theme').onclick = () => { // auto → light → dark
+  const t = { '': 'light', light: 'dark', dark: '' }[document.documentElement.dataset.theme || ''];
+  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  store.set('theme', t || null);
+  render();
+};
+// Swipe left/right to step, like the arrow keys.
+let touch;
+document.addEventListener('touchstart', e => { touch = e.touches[0]; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const t = e.changedTouches[0], dx = t.clientX - touch?.clientX, dy = t.clientY - touch?.clientY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy) && !e.target.closest('input, .note')) step(dx < 0 ? 1 : -1);
+}, { passive: true });
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, select')) return;
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+
+route();
+</script>
+</body>
+</html>
