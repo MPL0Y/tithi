@@ -1,0 +1,10 @@
+# Serve only the site; the rest of the repo (and .git) stays private to the build.
+*
+!index.html
+!panchang.js
+!sw.js
+!manifest.webmanifest
+!icon.svg
+!icon-192.png
+!icon-512.png
+!apple-touch-icon.png
