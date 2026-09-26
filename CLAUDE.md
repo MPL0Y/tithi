@@ -23,7 +23,7 @@ Pushing to `main` auto-deploys (Workers Builds runs `npx wrangler deploy`). Ship
   - `festivals(prev, cur, next)` dates the rows of the `FEST` table (`[masa, tithi, name, kala]`) by those kalas, plus the special cases handled in code (Holika Dahan/Holi, Ekadashi, Pradosh, Sankashti, sankranti).
 - **`index.html`**: all the UI (styles, markup and script in one file).
   - Hash routing: `#today|calendar|festivals?date=YYYY-MM-DD&city=Name`, or `&place=&at=lat,lon&tz=` for a custom place.
-  - Views: `today()`, `calendar()`, `festivals()`, drawn by `render()`.
+  - Views: `today()`, `calendar()`, `festivals()`, drawn by `render()`. With no hash, `#landing` shows instead (`land()`); the head script sets `data-landing` before first paint.
   - A 30-second interval moves the "now" markers and rolls over at midnight.
   - Term notes and the "How this is worked out" note (`#method`) use the native Popover API.
 - **`pages.js`**: writes committed static HTML for search engines, which can't read the app's hash routes: `festival/<name>/` (every built-in city, `YEARS`), `festivals/<year>/<city>/`, `festivals/` and `sitemap.xml`. It runs `panchang.js` in Node and shares its `CITIES` and `ROUTINE`. Output is committed, so deploys stay build-free.
