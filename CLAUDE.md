@@ -34,7 +34,7 @@ Pushing to `main` auto-deploys (Workers Builds runs `npx wrangler deploy`). Ship
 
 - **Adding a file the site needs:** un-ignore it in `.assetsignore`, which is a whitelist (the Worker's `assets.directory` is the repo root). Also add it to `CORE` in `sw.js`.
 - **Changing `CORE` or the offline behaviour:** bump `CACHE` in `sw.js`.
-- **Generated pages:** run `node pages.js` and commit after changing festival rules, `CITIES`, or the design tokens (its `<style>` copies them), and each January with `YEARS` bumped. Never hand-edit `festival/` or `festivals/`.
+- **Generated pages:** run `node pages.js` and commit after changing festival rules, `CITIES`, or the design tokens (its `<style>` copies them). `YEARS` is this year and next; a GitHub Action regenerates and pushes on 1 January. Never hand-edit `festival/` or `festivals/`.
 - **Analytics:** Cloudflare Web Analytics beacon in `index.html` and `pages.js`, using the agenticrabbit.com zone's site token (the zone's auto-injection doesn't reach Worker assets). `sw.js` lets it through uncached.
 - **For you rules:** reference values in `test.js` come from Drik's Janma Kundali, Tarabalam/Chandrabalam and Shani transit pages. Dasha dates are very sensitive to the Moon's longitude (1′ ≈ days), which is why the ayanamsa carries nutation.
 - **Festival rules:** update both `test.js` (reference dates copied from drikpanchang.com's yearly calendar, Delhi and London) and the Festivals paragraph of the `#method` note, which describes the rules and their known exceptions.

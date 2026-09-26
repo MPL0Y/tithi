@@ -3,12 +3,12 @@
 //   /festivals/<year>/<city>/ one city's year
 //   /festivals/              the index, plus sitemap.xml
 // Run: npm i --no-save astronomy-engine && node pages.js
-// Re-run each January (bump YEARS) and after changing festival rules. Commit the output.
+// Re-run after changing festival rules and commit the output. .github/workflows/pages.yml re-runs it each January.
 const fs = require('fs');
 const P = require('./panchang.js');
 
 const SITE = 'https://tithi.agenticrabbit.com';
-const YEARS = [2026, 2027];
+const YEARS = [new Date().getUTCFullYear(), new Date().getUTCFullYear() + 1];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const DAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
