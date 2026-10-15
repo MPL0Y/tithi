@@ -21,6 +21,7 @@
   const HOUR = 3600e3, DAY = 24 * HOUR;
   const mod = (x, n) => ((x % n) + n) % n;
   const add = (d, ms) => new Date(d.getTime() + ms);
+  const shift = (s, n) => { const t = new Date(Date.UTC(s.y, s.m, s.d + n)); return { y: t.getUTCFullYear(), m: t.getUTCMonth(), d: t.getUTCDate() }; };
 
   // Lahiri (Chitra paksha) ayanamsa: its 1956 value carried by general precession (IAU 2006), plus nutation,
   // since the tropical longitudes below are true of date. Matches Drik Panchang's Moon to ~10″.
@@ -286,6 +287,277 @@
     return { ...dasha(n, date), sadeSati: SADE_SATI[sat] || null, jupiter: mod(Math.floor(planetSid('Jupiter', date) / 30) - n.rashi, 12) + 1 };
   }
 
+  const ORD = n => n + ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10 * (n % 100 < 11 || n % 100 > 13)] || 'th');
+
+  // --- Ashtakoota Milan (36 Gunas Vedic Compatibility) ---
+  const YONI_NAMES = ['Horse', 'Elephant', 'Sheep', 'Serpent', 'Dog', 'Cat', 'Rat', 'Cow', 'Buffalo', 'Tiger', 'Deer', 'Monkey', 'Mongoose', 'Lion'];
+  const NAK_YONI = [0, 1, 2, 3, 3, 4, 5, 2, 5, 6, 6, 7, 8, 9, 8, 9, 10, 10, 4, 11, 12, 11, 13, 0, 13, 7, 1];
+  const YONI_ENEMIES = [[0, 8], [1, 13], [2, 11], [3, 12], [4, 10], [5, 6], [7, 9]];
+  const GANA_NAMES = ['Deva', 'Manushya', 'Rakshasa'];
+  const NAK_GANA = [0, 1, 2, 1, 0, 1, 0, 0, 2, 2, 1, 1, 0, 2, 0, 2, 0, 2, 2, 1, 1, 0, 2, 2, 1, 1, 0];
+  const NADI_NAMES = ['Adi', 'Madhya', 'Antya'];
+  const NAK_NADI = [0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0, 0, 1, 2];
+  const RASHI_LORD = [6, 1, 2, 3, 0, 2, 1, 6, 5, 4, 4, 5]; // RASHI index -> PLANET index: [Mars, Venus, Mercury, Moon, Sun, Mercury, Venus, Mars, Jupiter, Saturn, Saturn, Jupiter]
+  const GRAHA_REL = [
+    [0, -1, 0, 1, -1, 1, 1],   // Sun
+    [-1, 0, 1, -1, 1, 0, 0],   // Venus
+    [1, 1, 0, -1, 0, 0, 0],    // Mercury
+    [1, 0, 1, 0, 0, 0, 0],     // Moon
+    [-1, 1, 1, -1, 0, 0, -1],  // Saturn
+    [1, -1, -1, 1, 0, 0, 1],   // Jupiter
+    [1, 0, -1, 1, 0, 1, 0],    // Mars
+  ];
+
+  function ashtakoota(p1, p2) {
+    const n1 = p1.nak, r1 = p1.rashi, n2 = p2.nak, r2 = p2.rashi;
+
+    // 1. Varna (1 pt)
+    const VARNA_GRADE = [3, 2, 1, 4, 3, 2, 1, 4, 3, 2, 1, 4];
+    const v1 = VARNA_GRADE[r1], v2 = VARNA_GRADE[r2];
+    const varnaScore = v1 >= v2 ? 1 : 0;
+
+    // 2. Vashya (2 pts)
+    const vashyaGroup = r => [0, 1, 8, 9].includes(r) ? 0 : [2, 5, 6, 10].includes(r) ? 1 : [3, 11].includes(r) ? 2 : r === 4 ? 3 : 4;
+    const vg1 = vashyaGroup(r1), vg2 = vashyaGroup(r2);
+    const vashyaScore = vg1 === vg2 ? 2 : (vg1 === 1 || vg2 === 1) ? 1 : 0.5;
+
+    // 3. Tara (3 pts)
+    const t1 = mod(n2 - n1, 27) % 9, t2 = mod(n1 - n2, 27) % 9;
+    const badTara = [2, 4, 6];
+    const t1Good = !badTara.includes(t1), t2Good = !badTara.includes(t2);
+    const taraScore = (t1Good && t2Good) ? 3 : (t1Good || t2Good) ? 1.5 : 0;
+
+    // 4. Yoni (4 pts)
+    const y1 = NAK_YONI[n1], y2 = NAK_YONI[n2];
+    const isEnemy = YONI_ENEMIES.some(([a, b]) => (a === y1 && b === y2) || (a === y2 && b === y1));
+    const yoniScore = y1 === y2 ? 4 : isEnemy ? 0 : (Math.abs(y1 - y2) <= 3) ? 3 : 2;
+
+    // 5. Graha Maitri (5 pts)
+    const l1 = RASHI_LORD[r1], l2 = RASHI_LORD[r2];
+    const rel1 = GRAHA_REL[l1][l2], rel2 = GRAHA_REL[l2][l1];
+    let maitriScore = 0;
+    if (l1 === l2 || (rel1 === 1 && rel2 === 1)) maitriScore = 5;
+    else if ((rel1 === 1 && rel2 === 0) || (rel1 === 0 && rel2 === 1)) maitriScore = 4;
+    else if (rel1 === 0 && rel2 === 0) maitriScore = 3;
+    else if ((rel1 === 1 && rel2 === -1) || (rel1 === -1 && rel2 === 1)) maitriScore = 1;
+    else if ((rel1 === 0 && rel2 === -1) || (rel1 === -1 && rel2 === 0)) maitriScore = 0.5;
+    else maitriScore = 0;
+
+    // 6. Gana (6 pts)
+    const g1 = NAK_GANA[n1], g2 = NAK_GANA[n2];
+    let ganaScore = 0;
+    if (g1 === g2) ganaScore = 6;
+    else if ((g1 === 0 && g2 === 1) || (g1 === 1 && g2 === 0)) ganaScore = 5;
+    else if ((g1 === 0 && g2 === 2) || (g1 === 2 && g2 === 0)) ganaScore = 1;
+    else ganaScore = 0;
+
+    // 7. Bhakoot (7 pts)
+    const dist = mod(r2 - r1, 12) + 1;
+    const badDist = [2, 12, 6, 8, 9, 5].includes(dist);
+    const sameLordOrFriends = l1 === l2 || (rel1 === 1 && rel2 === 1);
+    const bhakootScore = (!badDist || sameLordOrFriends) ? 7 : 0;
+
+    // 8. Nadi (8 pts)
+    const nd1 = NAK_NADI[n1], nd2 = NAK_NADI[n2];
+    const nadiScore = nd1 !== nd2 ? 8 : (n1 === n2 && p1.pada !== p2.pada) ? 8 : (r1 === r2 && n1 !== n2) ? 8 : 0;
+
+    const total = varnaScore + vashyaScore + taraScore + yoniScore + maitriScore + ganaScore + bhakootScore + nadiScore;
+    const pct = Math.round((total / 36) * 100);
+
+    const verdict = total >= 28 ? 'Cosmic Alignment' : total >= 21 ? 'High Affinity' : total >= 18 ? 'Balanced Dynamic' : 'Intense Friction';
+    const verdictDesc = total >= 28
+      ? 'Rare natural harmony across instinctive, emotional, and everyday wavelengths. You instinctively give each other room to breathe.'
+      : total >= 21
+      ? 'Strong reciprocal pull. Most differences are complementary rather than conflicting, provided communication stays direct.'
+      : total >= 18
+      ? 'A dynamic that requires conscious calibration. Chemistry is present, but unexamined assumptions will trigger mutual defensiveness.'
+      : 'High constitutional tension. You challenge each other deeply; friction here is either a furnace for growth or an exhausting cycle.';
+
+    const kootas = [
+      { key: 'nadi', name: 'Nadi', label: 'Constitution & Depth', score: nadiScore, max: 8, summary: nd1 !== nd2 ? 'Aligned energetic blueprint; low constitutional friction.' : 'Nadi tension; emotional exhaustion possible if boundaries are blurred.' },
+      { key: 'bhakoot', name: 'Bhakoot', label: 'Emotional Resonance', score: bhakootScore, max: 7, summary: bhakootScore === 7 ? 'Shared emotional compass; intuitive mutual empathy.' : 'Different emotional dialects; requires patience during disagreements.' },
+      { key: 'gana', name: 'Gana', label: 'Temperament & Tempo', score: ganaScore, max: 6, summary: `${GANA_NAMES[g1]} & ${GANA_NAMES[g2]}: ${ganaScore >= 5 ? 'Natural day-to-day cadence.' : 'Contrasting life pace; negotiate daily expectations.'}` },
+      { key: 'maitri', name: 'Graha Maitri', label: 'Mental Rapport & Humor', score: maitriScore, max: 5, summary: maitriScore >= 4 ? 'Effortless intellectual flow; you enjoy how each other thinks.' : 'Different reasoning styles; avoid debating to win.' },
+      { key: 'yoni', name: 'Yoni', label: 'Chemistry & Instinct', score: yoniScore, max: 4, summary: `${YONI_NAMES[y1]} & ${YONI_NAMES[y2]}: ${yoniScore >= 3 ? 'Potent physical and instinctual chemistry.' : 'Instincts clash under stress; cultivate mutual grace.'}` },
+      { key: 'tara', name: 'Tara', label: 'Karmic Trajectory', score: taraScore, max: 3, summary: taraScore >= 2 ? 'Mutually supportive destiny; you bring good fortune to one another.' : 'Unequal karmic weight; one may carry more emotional load.' },
+      { key: 'vashya', name: 'Vashya', label: 'Power & Magnetism', score: vashyaScore, max: 2, summary: vashyaScore >= 1.5 ? 'Balanced dynamic; neither dominates the other.' : 'Subtle power contests; prioritize transparency.' },
+      { key: 'varna', name: 'Varna', label: 'Ego & Soul Outlook', score: varnaScore, max: 1, summary: varnaScore === 1 ? 'Compatible internal values and life philosophy.' : 'Different core worldviews; respect divergent paths.' },
+    ];
+
+    return {
+      total, max: 36, pct, verdict, verdictDesc, kootas,
+      p1: { nak: n1, rashi: r1, nakName: NAKSHATRA[n1], rashiName: RASHI[r1], yoni: YONI_NAMES[y1], gana: GANA_NAMES[g1], nadi: NADI_NAMES[nd1] },
+      p2: { nak: n2, rashi: r2, nakName: NAKSHATRA[n2], rashiName: RASHI[r2], yoni: YONI_NAMES[y2], gana: GANA_NAMES[g2], nadi: NADI_NAMES[nd2] },
+    };
+  }
+
+  // Mean lunar node (Rahu)
+  const meanMoonNode = d => {
+    const jd = d.getTime() / 864e5 + 2440587.5;
+    const t = (jd - 2451545.0) / 36525;
+    return mod(125.04452 - 1934.136261 * t + 0.0020708 * t * t, 360);
+  };
+
+  // Full Janma Kundli: 9 Grahas + Ascendant (Lagna) + Whole Sign Houses
+  function kundli(p) {
+    const t = birthTime(p);
+    const ayan = ayanamsa(t);
+    const gmst = A.SiderealTime(t);
+    const lstDeg = mod(gmst * 15 + (p.lon || 0), 360);
+    const rad = Math.PI / 180;
+    const eps = 23.44 * rad, phi = (p.lat || 0) * rad, theta = lstDeg * rad;
+    const y = Math.cos(theta);
+    const x = - (Math.sin(eps) * Math.tan(phi) + Math.cos(eps) * Math.sin(theta));
+    const tropAsc = mod(Math.atan2(y, x) / rad, 360);
+    const lagnaLon = mod(tropAsc - ayan, 360);
+    const lagnaRashi = Math.floor(lagnaLon / 30);
+    const lagnaNak = Math.floor(lagnaLon / NAK);
+
+    const bodies = [
+      { name: 'Sun', lon: sunSid(t) },
+      { name: 'Moon', lon: moonSid(t) },
+      { name: 'Mars', lon: planetSid('Mars', t) },
+      { name: 'Mercury', lon: planetSid('Mercury', t) },
+      { name: 'Jupiter', lon: planetSid('Jupiter', t) },
+      { name: 'Venus', lon: planetSid('Venus', t) },
+      { name: 'Saturn', lon: planetSid('Saturn', t) },
+      { name: 'Rahu', lon: mod(meanMoonNode(t) - ayan, 360) },
+      { name: 'Ketu', lon: mod(meanMoonNode(t) - ayan + 180, 360) },
+    ];
+
+    const grahas = bodies.map(b => {
+      const rashi = Math.floor(b.lon / 30);
+      const nak = Math.floor(b.lon / NAK);
+      const pada = Math.floor((b.lon / NAK - nak) * 4) + 1;
+      const degInRashi = b.lon % 30;
+      const house = mod(rashi - lagnaRashi, 12) + 1;
+      return {
+        ...b, rashi, nak, pada, degInRashi, house,
+        rashiName: RASHI[rashi], nakName: NAKSHATRA[nak],
+      };
+    });
+
+    const houses = Array.from({ length: 12 }, (_, i) => {
+      const hNum = i + 1;
+      const hRashi = (lagnaRashi + i) % 12;
+      const residents = grahas.filter(g => g.house === hNum);
+      return { house: hNum, rashi: hRashi, rashiName: RASHI[hRashi], residents };
+    });
+
+    return {
+      time: t,
+      lagna: { lon: lagnaLon, rashi: lagnaRashi, rashiName: RASHI[lagnaRashi], nak: lagnaNak, nakName: NAKSHATRA[lagnaNak], pada: Math.floor((lagnaLon / NAK - lagnaNak) * 4) + 1 },
+      grahas,
+      houses,
+    };
+  }
+
+  // Co-Star style personalized daily cosmic readout & Do's/Don'ts
+  function insights(p, n) {
+    const me = personal(p, n);
+    const taraNow = me.tara[0]?.name || 'Janma';
+    const taraKind = me.tara[0]?.kind || 'caution';
+    const chandraNow = me.chandra[0]?.house || 1;
+    const isAshtama = me.chandra.some(x => x.ashtama);
+    const wd = p.vara;
+
+    let vibe = '';
+    if (isAshtama) {
+      vibe = 'The Moon sits in your 8th house (Chandrashtama). Your emotional filter is porous and instincts are hyper-reactive. Treat today like a retreat: observe quietly, avoid signing ultimatums, and let other people reveal themselves.';
+    } else if (taraKind === 'bad') {
+      vibe = `Under ${taraNow} Tara, cosmic momentum is uncooperative for brute-force execution. Small frictions are invitations to slow down, not battles to win. Conserve your energy for the next lunar shift.`;
+    } else if (taraKind === 'good' && [1, 3, 6, 7, 10, 11].includes(chandraNow)) {
+      vibe = `The sky is wide open for you today. ${taraNow} Tara meets an auspicious ${ORD(chandraNow)} house transit. Your voice carries weight, and timing is on your side. Step boldly into the difficult conversation or project launch.`;
+    } else {
+      vibe = `A balanced, steady current. The Moon in your ${ORD(chandraNow)} house asks for grounded routine over grand gestures. Pay attention to the subtle details others are skipping over.`;
+    }
+
+    const dos = [];
+    const donts = [];
+
+    if (isAshtama) {
+      dos.push('Take the unreturned message as clarity');
+      dos.push('Audit your financial subscriptions and commitments');
+      dos.push('Spend an hour completely unplugged after dusk');
+      donts.push('Pick an ideological fight on group chats');
+      donts.push('Make irreversible career declarations before noon');
+      donts.push('Confuse boredom with an emergency');
+    } else if (taraKind === 'bad') {
+      dos.push('Double-check calendar invitations and fine print');
+      dos.push('Delegate tedious tasks where possible');
+      dos.push('Go for an uninterrupted walk before 4 PM');
+      donts.push('Take ambiguity as a personal slight');
+      donts.push('Commit to new long-term obligations today');
+      donts.push('Rush physical movements or transport');
+    } else {
+      dos.push('Pitch the bold idea you’ve been keeping quiet');
+      dos.push('Reactivate an old connection who came to mind');
+      dos.push('Lock in decisions during your best windows');
+      donts.push('Downplay your contribution to keep the peace');
+      donts.push('Wait for someone else to grant permission');
+      donts.push('Let passive resistance stall your momentum');
+    }
+
+    if (wd === 'Mangalavara') {
+      dos.push('Channel excess adrenaline into physical exertion');
+      donts.push('Escalate defensive remarks into prolonged conflict');
+    } else if (wd === 'Budhavara') {
+      dos.push('Write down the thoughts currently cluttering your head');
+      donts.push('Overthink an answer that only requires yes or no');
+    } else if (wd === 'Guruvara') {
+      dos.push('Seek wisdom from a mentor or elder you respect');
+      donts.push('Pretend to understand something you actually don’t');
+    } else if (wd === 'Shukravara') {
+      dos.push('Treat yourself to an aesthetic or sensory pleasure');
+      donts.push('Buy things to soothe momentary emotional fatigue');
+    } else if (wd === 'Shanivara') {
+      dos.push('Clean your physical workspace and digital desktop');
+      donts.push('Cut corners on foundational work');
+    } else if (wd === 'Ravivara') {
+      dos.push('Reset your sleep hygiene and recharge your solar battery');
+      donts.push('Sacrifice your Sunday peace for someone else’s crisis');
+    } else {
+      dos.push('Honor your emotional rhythm without apologizing');
+      donts.push('Make definitive vows while your mood is fluctuating');
+    }
+
+    const areas = {
+      mind: isAshtama ? 'Restless' : taraKind === 'bad' ? 'Divided' : 'Sharp',
+      social: isAshtama ? 'Keep distance' : chandraNow === 7 || chandraNow === 11 ? 'Magnetic' : 'Selective',
+      energy: taraKind === 'good' ? 'Surging' : 'Conserve',
+      career: [10, 11, 1].includes(chandraNow) ? 'High Leverage' : 'Routine Maintenance',
+    };
+
+    return { vibe, dos: dos.slice(0, 3), donts: donts.slice(0, 3), areas, taraNow, chandraNow, isAshtama };
+  }
+
+  // Personal Muhurta timing finder
+  function muhurta(n, loc, start, daysCount = 30) {
+    const list = [];
+    for (let k = 0; k < daysCount; k++) {
+      const s = shift(start, k);
+      const p = day(s.y, s.m, s.d, loc);
+      if (!p) continue;
+      const me = personal(p, n);
+      if (me.windows.length && !me.chandra.some(x => x.ashtama)) {
+        for (const w of me.windows) {
+          const chog = p.choghadiya.day.find(c => c.start <= w.start && w.start < c.end)?.name || 'Amrit';
+          list.push({
+            date: s,
+            tithi: p.tithi[0].name,
+            nakshatra: p.nakshatra[0].name,
+            choghadiya: chog,
+            tara: me.tara[0].name,
+            start: w.start,
+            end: w.end,
+            score: (chog === 'Amrit' ? 3 : chog === 'Shubh' ? 2 : 1) + (me.tara[0].kind === 'good' ? 2 : 1),
+          });
+        }
+      }
+    }
+    return list.sort((a, b) => b.score - a.score || a.start - b.start);
+  }
+
   // Built-in places, shared by the app and pages.js.
   const CITIES = [
     ['New Delhi', 28.6139, 77.2090, 'Asia/Kolkata'], ['Mumbai', 19.0760, 72.8777, 'Asia/Kolkata'],
@@ -302,6 +574,10 @@
   // Monthly vrats: on the month page, left off the year's festival lists.
   const ROUTINE = ['Ekadashi', 'Purnima', 'Amavasya', 'Pradosh Vrat', 'Sankashti Chaturthi'];
 
-  const api = { day, brief, festivals, tzOffset, localMidnight, localTime, birthTime, candidates, natal, dasha, personal, glance, transits, TARA, NAKSHATRA, TITHI, MASA, RASHI, CITIES, ROUTINE };
+  const api = {
+    day, brief, festivals, tzOffset, localMidnight, localTime, birthTime, candidates,
+    natal, dasha, personal, glance, transits, ashtakoota, kundli, insights, muhurta, shift,
+    TARA, NAKSHATRA, TITHI, MASA, RASHI, CITIES, ROUTINE,
+  };
   if (typeof module !== 'undefined') module.exports = api; else root.Panchang = api;
 })(this, typeof Astronomy !== 'undefined' ? Astronomy : require('astronomy-engine'));

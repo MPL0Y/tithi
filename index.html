@@ -250,6 +250,7 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
   .orbit::after { content: ""; position: absolute; inset: -5% -6%; border: 1px solid var(--sindoor); border-radius: 50%; transform: rotate(-12deg); pointer-events: none; }
   #orb { display: block; width: 100%; aspect-ratio: 1; }
   .three { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .three.four-cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .three a { display: grid; align-content: start; gap: 0.375rem; padding: 1rem 1.25rem 0.5rem 0; height: 100%; transition: background 150ms ease; }
   .three li + li a { padding-left: 1.25rem; border-left: 1px solid var(--rule); }
   .three a:hover { background: var(--recess); }
@@ -258,11 +259,91 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
   .three b sup { font-family: var(--mono); font-size: 0.5625rem; letter-spacing: 0.06em; margin-right: 0.375rem; color: var(--muted); }
   .three span { color: var(--ink2); font-size: 0.875rem; }
 
+  /* Tithi+ pill & modal */
+  .plus-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.65rem; border: 1px solid var(--ink); border-radius: 999px; font-family: var(--mono); font-size: 0.625rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: all 150ms ease; color: var(--ink); background: none; }
+  .plus-pill:hover { background: var(--ink); color: var(--paper); }
+  .plus-pill.active { border-color: var(--sindoor); color: var(--sindoor); font-weight: 500; }
+  .plus-pill.active:hover { background: var(--sindoor); color: var(--paper); }
+  .mark-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; width: 100%; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(28, 27, 25, 0.65); backdrop-filter: blur(5px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 200ms ease; }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .modal-card { width: min(34rem, 100%); background: var(--paper); border: 1px solid var(--ink); padding: 2rem 2.25rem; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25); position: relative; }
+  .modal-card .close-btn { position: absolute; right: 1.25rem; top: 1.25rem; font-family: var(--mono); font-size: 1.25rem; cursor: pointer; border: 0; background: none; color: var(--muted); padding: 0.25rem; min-height: 36px; }
+  .modal-card .close-btn:hover { color: var(--sindoor); }
+  .modal-title { font-family: var(--serif); font-size: 2.5rem; font-weight: 400; line-height: 1; margin: 0.25rem 0; }
+  .modal-title em { color: var(--sindoor); font-style: italic; }
+  .modal-sub { color: var(--ink2); font-size: 0.9375rem; margin-bottom: 1.5rem; }
+  .pricing-toggle { display: flex; border: 1px solid var(--ink); margin-bottom: 1.5rem; }
+  .pricing-opt { flex: 1; padding: 0.75rem 0.5rem; text-align: center; cursor: pointer; font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; background: none; border: 0; color: var(--ink2); transition: all 150ms ease; }
+  .pricing-opt.sel { background: var(--ink); color: var(--paper); font-weight: 500; }
+  .pricing-opt span.badge { display: inline-block; font-size: 0.5625rem; background: var(--sindoor); color: #fff; padding: 1px 4px; border-radius: 2px; margin-left: 0.25rem; }
+  .features-list { list-style: none; padding: 0; display: grid; gap: 0.875rem; margin-bottom: 1.75rem; }
+  .features-list li { font-size: 0.875rem; line-height: 1.45; display: flex; gap: 0.75rem; align-items: baseline; }
+  .features-list li span.dot { color: var(--sindoor); font-size: 0.875rem; }
+  .promo-box { display: flex; gap: 0.5rem; margin-top: 1.25rem; align-items: center; }
+  .promo-box input { flex: 1; font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; min-height: 42px; padding: 0 0.75rem; border: 1px solid var(--rule); }
+  .promo-box button { min-height: 42px; padding: 0 1.25rem; border: 1px solid var(--ink); background: none; }
+  .promo-box button:hover { background: var(--recess); color: var(--sindoor); }
+
+  /* Daily Vibe & Do/Don't (Co-Star vibe) */
+  .vibe-box { margin-top: 1.5rem; padding: 1.25rem 1.5rem; border: 1px solid var(--ink); background: var(--recess); }
+  .vibe-box .vibe-tag { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sindoor); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .vibe-box .vibe-tag::before { content: "●"; font-size: 0.5rem; }
+  .vibe-box .vibe-text { font-family: var(--serif); font-size: 1.25rem; line-height: 1.35; font-style: italic; }
+  .dodont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.25rem; }
+  .dodont-col h4 { font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; }
+  .dodont-col.do h4 { color: var(--ink); }
+  .dodont-col.dont h4 { color: var(--sindoor); }
+  .dodont-list { list-style: none; padding: 0; display: grid; gap: 0.5rem; }
+  .dodont-list li { font-size: 0.875rem; line-height: 1.4; display: flex; gap: 0.5rem; align-items: baseline; }
+  .dodont-list li::before { font-family: var(--mono); font-size: 0.75rem; }
+  .dodont-col.do li::before { content: "✓"; color: var(--ink2); }
+  .dodont-col.dont li::before { content: "✕"; color: var(--sindoor); }
+  .area-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1.25rem; border-top: 1px solid var(--rule); padding-top: 0.75rem; }
+  .area-metric { display: grid; }
+  .area-metric .k { font-family: var(--mono); font-size: 0.625rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .area-metric .v { font-family: var(--serif); font-size: 1.0625rem; }
+
+  /* Kundli & Muhurta tables */
+  .kundli-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--ink); margin-top: 1.5rem; }
+  .kundli-cell { background: var(--paper); padding: 0.875rem 1rem; min-height: 5rem; }
+  .kundli-cell .hn { font-family: var(--mono); font-size: 0.625rem; color: var(--muted); text-transform: uppercase; }
+  .kundli-cell .hr { font-family: var(--serif); font-size: 1.125rem; line-height: 1.1; margin: 0.25rem 0; }
+  .kundli-cell .hp { font-family: var(--sans); font-size: 0.75rem; color: var(--sindoor); }
+  .graha-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 0.875rem; }
+  .graha-table th { font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); text-align: left; padding: 0.5rem 0; border-bottom: 1px solid var(--ink); }
+  .graha-table td { padding: 0.625rem 0; border-bottom: 1px solid var(--rule); }
+
+  /* Compatibility & Synastry */
+  .match-score-card { display: grid; grid-template-columns: 180px 1fr; gap: 2.5rem; align-items: center; padding: 2rem 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); margin: 2rem 0; }
+  .match-gauge { text-align: center; }
+  .match-big-num { font-family: var(--serif); font-size: clamp(3.5rem, 8vw, 5rem); line-height: 0.85; letter-spacing: -0.04em; }
+  .match-big-num small { font-size: 1.25rem; font-family: var(--mono); color: var(--muted); margin-left: 0.25rem; }
+  .match-gauge-bar { width: 100%; height: 6px; background: var(--rule); border-radius: 3px; margin-top: 0.75rem; overflow: hidden; }
+  .match-gauge-fill { height: 100%; background: var(--sindoor); transition: width 400ms ease; }
+  .match-verdict h3 { font-family: var(--serif); font-size: clamp(1.75rem, 3.5vw, 2.5rem); line-height: 1; font-weight: 400; margin-bottom: 0.5rem; }
+  .match-verdict p { color: var(--ink2); font-size: 1rem; max-width: 32rem; }
+  .koota-ledger { display: grid; margin-top: 1.5rem; }
+  .koota-row { display: grid; grid-template-columns: 8rem 1fr 3.5rem; gap: 1rem; align-items: baseline; padding: 0.875rem 0; border-top: 1px solid var(--rule); }
+  .koota-row:last-child { border-bottom: 1px solid var(--rule); }
+  .koota-row .kn { font-family: var(--serif); font-size: 1.25rem; }
+  .koota-row .kd { color: var(--ink2); font-size: 0.875rem; }
+  .koota-row .ks { font-family: var(--mono); font-size: 0.8125rem; text-align: right; font-weight: 500; }
+  .koota-locked-curtain { position: relative; margin-top: -1px; }
+  .koota-blur { filter: blur(5px); opacity: 0.4; pointer-events: none; user-select: none; }
+  .koota-gate { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: rgba(242, 237, 228, 0.88); backdrop-filter: blur(2px); padding: 1.5rem; border: 1px dashed var(--sindoor); }
+  [data-theme=dark] .koota-gate { background: rgba(22, 21, 18, 0.9); }
+  .koota-gate b { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 0.5rem; }
+  .koota-gate p { color: var(--ink2); font-size: 0.875rem; max-width: 24rem; margin-bottom: 1rem; }
+  .circle-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; align-items: center; }
+  .circle-bar span.label { margin-right: 0.5rem; }
+
   @media (max-width: 900px) {
     #landing { padding-top: 1.5rem; gap: 2rem; }
     .hero { grid-template-columns: 1fr; gap: 2.5rem; }
     .orbit { order: -1; width: min(220px, 55vw); margin: 1rem auto 0; }
-    .three { grid-template-columns: 1fr; }
+    .three, .three.four-cols { grid-template-columns: 1fr; }
     .three li + li a { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
     .three a { padding-bottom: 1rem; }
     .page { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 1.5rem; }
@@ -272,17 +353,16 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
     .dayno { font-size: 6.5rem; margin-top: 2rem; }
     .folio .moon { grid-column: 2; grid-row: 1 / span 2; width: 110px; height: 110px; margin: 2rem 0 0; }
     .folio .tithi { font-size: 2rem; margin-top: 1.5rem; }
-    /* on Today the summary sentence already says this */
     [data-view=today] .folio :is(.tithi, .sub, .fest) { display: none; }
     [data-view=today] .brief { margin-top: 0; }
-    /* the month and year views carry their own date */
-    :is([data-view=calendar], [data-view=festivals]) .folio-body { display: none; }
+    :is([data-view=calendar], [data-view=festivals], [data-view=compatibility]) .folio-body { display: none; }
   }
   @media (max-width: 600px) {
-    .page { padding-left: 1rem; padding-right: 1rem; }
-    .page { padding-bottom: 7rem; }
+    .page { padding-left: 1rem; padding-right: 1rem; padding-bottom: 7rem; }
     .note { margin-bottom: 5rem; }
-    nav { position: fixed; z-index: 2; left: 0; right: 0; bottom: 0; background: var(--paper); border: 0; border-top: 1px solid var(--ink); padding: 0.625rem 1rem calc(0.625rem + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; text-align: center; }
+    nav { position: fixed; z-index: 2; left: 0; right: 0; bottom: 0; background: var(--paper); border: 0; border-top: 1px solid var(--ink); padding: 0.625rem 0.5rem calc(0.625rem + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; text-align: center; }
+    nav a { min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 0.8125rem; }
+    nav a sup { font-size: 0.5rem; margin-right: 0.15rem; }
     .ahead { grid-template-columns: 1fr 1fr; }
     .ahead a:nth-child(3) { padding-left: 0; border-left: 0; }
     .ahead a:nth-child(n+3) { border-top: 1px solid var(--rule); }
@@ -296,18 +376,36 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
     .cal a.fe .n::before { content: ""; position: absolute; right: -0.5rem; top: 0.1em; width: 5px; height: 5px; border-radius: 50%; background: var(--sindoor); }
     .legend i { display: none; }
     .legend .dot { display: block; }
-    nav a { min-height: 44px; display: flex; align-items: center; justify-content: center; }
     nav { padding-top: 0; padding-bottom: env(safe-area-inset-bottom); }
     svg.chart text { font-size: 15px; }
     svg.chart text.r { font-size: 12px; }
     .ledger > a, .ledger > div, .ledger.times > div { grid-template-columns: 3.5rem 1fr; }
     .ledger .q, .ledger .time { grid-column: 2; }
+    .match-score-card { grid-template-columns: 1fr; gap: 1.25rem; text-align: center; }
+    .match-gauge-bar { max-width: 200px; margin: 0.75rem auto 0; }
+    .koota-row { grid-template-columns: 1fr auto; }
+    .koota-row .kd { grid-column: 1 / -1; margin-top: 0.125rem; }
+    .dodont-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .area-metrics { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .kundli-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media print {
+    body::before, nav, .controls, .colophon, .faq, .ahead, .plus-pill, button { display: none !important; }
+    .page { max-width: 100%; margin: 0; padding: 0; display: block; }
+    .folio { display: none; }
+    #out { animation: none !important; }
   }
 </style>
 </head>
 <body>
 <section id="landing" aria-label="Welcome">
-  <header class="land-top"><span class="mark">Tithi <span>a panchang</span></span><span class="label" id="land-date"></span></header>
+  <header class="land-top">
+    <div style="display:flex;align-items:baseline;gap:0.75rem;">
+      <span class="mark">Tithi <span>a panchang</span></span>
+      <button class="plus-pill" data-open-plus id="land-plus-badge">✦ Tithi+</button>
+    </div>
+    <span class="label" id="land-date"></span>
+  </header>
   <div class="hero">
     <div>
       <p class="label">A Hindu panchang for your city</p>
@@ -321,15 +419,19 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
     </div>
     <div class="orbit"><canvas id="orb" role="img" aria-label="Today’s moon"></canvas></div>
   </div>
-  <ol class="three">
-    <li><a href="#today"><b><sup>I</sup>Today</b><span>The five limbs, good and bad hours, choghadiya and hora, kept live.</span></a></li>
+  <ol class="three four-cols">
+    <li><a href="#today"><b><sup>I</sup>Today</b><span>The five limbs, daily guidance, good hours, kept live.</span></a></li>
     <li><a href="#calendar"><b><sup>II</sup>Calendar</b><span>Each month by tithi, with the moon at every sunrise.</span></a></li>
     <li><a href="#festivals"><b><sup>III</sup>Festivals</b><span>The year’s festivals, dated by the hour each is kept in your city.</span></a></li>
+    <li><a href="#compatibility"><b><sup>IV</sup>Compatibility</b><span>36 Gunas Vedic synastry with friends and lovers.</span></a></li>
   </ol>
 </section>
 <div class="page">
   <aside class="folio">
-    <a class="mark" id="home" href="#today">Tithi <span>a panchang</span></a>
+    <div class="mark-row">
+      <a class="mark" id="home" href="#today">Tithi <span>a panchang</span></a>
+      <button class="plus-pill" data-open-plus id="plus-badge">✦ Tithi+</button>
+    </div>
     <div class="controls">
       <div class="line"><button id="prev">← Prev</button><button id="today">Today</button><button id="next">Next →</button><button id="pickdate">Pick date</button></div>
       <div class="line"><input id="city" list="places" aria-label="City" autocomplete="off" spellcheck="false"><datalist id="places"></datalist><button id="locate">Locate me</button><button id="lang"></button></div>
@@ -339,7 +441,7 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
   </aside>
   <main>
     <nav id="nav" aria-label="Views">
-      <a data-v="today"><sup>I</sup>Today</a><a data-v="calendar"><sup>II</sup>Calendar</a><a data-v="festivals"><sup>III</sup>Festivals</a>
+      <a data-v="today"><sup>I</sup>Today</a><a data-v="calendar"><sup>II</sup>Calendar</a><a data-v="festivals"><sup>III</sup>Festivals</a><a data-v="compatibility"><sup>IV</sup>Compatibility</a>
     </nav>
     <div id="out"></div>
     <p id="say" class="sr" aria-live="polite"></p>
@@ -351,7 +453,7 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <details><summary>Is it accurate outside India?</summary><p>Everything is worked out for your city’s coordinates and time zone. Festival dates are checked against Drik Panchang for New Delhi (2025–2027) and London (2026).</p></details>
       <details><summary>Is it free? Does it work offline?</summary><p>It’s free, with no ads and no sign-up. After the first visit it works offline, and you can add it to your home screen from your browser’s share or menu button.</p></details>
     </section>
-    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button><button id="account" hidden></button><a href="/festivals/">Festival dates by city</a>
+    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button><button data-open-plus id="plus-foot-btn">✦ Tithi+</button><button id="account" hidden></button><a href="/festivals/">Festival dates by city</a>
       <p class="made">Free · No ads · No sign-up · Works offline · <a href="https://github.com/MPL0Y/tithi">Open source</a>. Made by <a href="https://x.com/hardikksharmaaa">Hardik</a>. Not affiliated with Drik Panchang.</p></footer>
     <div popover id="method" class="note wide">
       <b>How this is worked out</b>
@@ -369,10 +471,39 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <h3>For you</h3>
       <p>From your birth date, time and place the Moon’s sidereal position at birth gives your nakshatra, pada and rashi. Tara bala counts from your nakshatra to the day’s, in nines: Janma (caution), Sampat, Vipat (avoid), Kshema, Pratyak (avoid), Sadhana, Naidhana (avoid), Mitra, Parama Mitra. Chandra bala counts the day’s Moon sign from yours: the 1st, 3rd, 6th, 7th, 10th and 11th are good, and the 8th is chandrashtama. The best windows are the good day choghadiya (Amrit, Shubh, Labh) outside Rahu kalam, Yamaganda, Gulika and dur muhurta, while both tara and chandra bala are good.</p>
       <p>The Vimshottari dasha starts with the lord of your birth nakshatra, whose period is cut by the part of the nakshatra the Moon had already crossed; antardashas split each period in the same order and proportion, with 365.25-day years. Sade Sati is Saturn in the 12th, 1st or 2nd sign from your Moon (rising, peak, setting); Jupiter’s house is counted the same way. These are traditional rules, given as guidance, not prediction. Your birth details are stored with your Google account so they follow you between devices, and a copy stays in this browser; delete them from the For you section at any time.</p>
+      <h3>Compatibility &amp; Synastry</h3>
+      <p>Vedic Ashtakoota evaluates 36 Gunas across eight dimensions: Varna (ego alignment, 1 pt), Vashya (magnetic pull, 2 pts), Tara (karmic longevity, 3 pts), Yoni (instinct &amp; physical chemistry, 4 pts), Graha Maitri (mental rapport, 5 pts), Gana (temperament, 6 pts), Bhakoot (emotional resonance, 7 pts), and Nadi (biological constitution, 8 pts). Scores above 18 indicate workable affinity; 28+ denotes rare cosmic alignment.</p>
       <p>These dates match Drik Panchang for New Delhi across 2025–2027 and for London in 2026, with one exception: in 2026 Drik moves Holika Dahan and Holi a day later for Delhi, most likely because of that evening’s lunar eclipse. Eclipses, bhadra timings, regional customs and nakshatra conditions are not modelled, so a family or temple calendar can differ by a day. When it matters, check with them.</p>
+    </div>
+    <div id="plus-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="plus-title">
+      <div class="modal-card">
+        <button class="close-btn" id="plus-close" aria-label="Close">✕</button>
+        <span class="label">Cosmic Membership</span>
+        <h2 class="modal-title" id="plus-title">Tithi<em>+</em></h2>
+        <p class="modal-sub">Hyper-personalized Vedic guidance, unlimited synastry, and deep planetary foresight.</p>
+        <div class="pricing-toggle">
+          <button class="pricing-opt" data-plan="monthly">Monthly · ₹199 <span style="font-size:0.65rem;opacity:0.8">($4.99)</span></button>
+          <button class="pricing-opt sel" data-plan="annual">Annual · ₹1,499 <span class="badge">Save 37%</span> <span style="font-size:0.65rem;opacity:0.8">($39)</span></button>
+        </div>
+        <ul class="features-list">
+          <li><span class="dot">✦</span><span><b>Unlimited Compatibility &amp; Synastry:</b> Compare with any friend, partner, or crush across all 8 Vedic Kootas (Chemistry, Emotional alignment, Temperament, Constitution).</span></li>
+          <li><span class="dot">✦</span><span><b>Daily Co-Star Guidance:</b> Personal Do’s &amp; Don’ts, today’s vibe, and planetary transits calculated against your birth chart.</span></li>
+          <li><span class="dot">✦</span><span><b>90-Day Auspicious Muhurta Finder:</b> Find high-energy windows for contracts, major purchases, dates, and travel.</span></li>
+          <li><span class="dot">✦</span><span><b>Complete Janma Kundli &amp; Dossier:</b> 9 Grahas in sidereal Lahiri, Lagna (Ascendant), 12 houses, and 120-year Vimshottari Mahadasha roadmap.</span></li>
+          <li><span class="dot">✦</span><span><b>Saved Circle:</b> Keep your friends and partners saved for instant relationship dynamics comparison.</span></li>
+        </ul>
+        <button class="cta" id="plus-cta" style="width:100%; justify-content:center;">Upgrade to Tithi+ — ₹1,499 / year <span>→</span></button>
+        <p class="mono" style="font-size:0.6875rem; color:var(--ink2); margin-top:0.35rem; text-align:center;">Instant unlock via UPI (GPay, PhonePe, Paytm), Cards, NetBanking via Razorpay</p>
+        <div class="promo-box">
+          <input id="plus-promo" placeholder="PROMO CODE (e.g. COSTAR)" autocomplete="off" spellcheck="false">
+          <button id="plus-promo-btn">Apply</button>
+        </div>
+        <p id="plus-msg" class="mono" style="font-size:0.6875rem; color:var(--sindoor); margin-top:0.5rem; min-height:1rem;"></p>
+      </div>
     </div>
   </main>
 </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2/astronomy.browser.min.js"></script>
 <script src="panchang.js"></script>
 <script>
@@ -421,6 +552,8 @@ let lang = store.get('lang') || 'en', system = store.get('system') || 'amanta';
 let sel; // {y, m, d} in loc's time zone
 // For you: birth details (raw inputs only) from the API, cached here so they paint at once and offline.
 let birth = store.get('birth'), natal = birth && Panchang.natal(birth), editing = false;
+let isPro = store.get('tithi_pro') || false, circle = store.get('circle') || [];
+let activePartner = circle[0] || null, showKundli = false, showMuhurta = false, addingPartner = false;
 
 function partsIn(date, tz) {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(date).map(x => [x.type, +x.value]));
@@ -681,6 +814,11 @@ const views = {
     return `<h1 class="title">The festivals <em>of ${sel.y}</em></h1><p>Worked out for ${esc(loc.name)}. Monthly vrats such as Ekadashi and Pradosh sit on the month page.</p>
       ${byMonth.map((list, m) => list.length ? chap(String(m + 1).padStart(2, '0'), `<em>${MONTHS[m]}</em>`, `<div class="ledger">${list.map(([b, f]) => `<a href="${url('today', b)}"${b === next ? ' class="now"' : ''}><span class="d">${b.d}<small>${WD[b.weekday]}</small></span><span class="nm">${esc(f)}</span><span class="q">${esc(b.tithiName)}</span></a>`).join('')}</div>`, next?.m === m && 'coming') : '').join('')}`;
   },
+  compatibility() {
+    if (!user) return `<h1 class="title">Cosmic <em>Compatibility</em></h1><p>36 Gunas Vedic Ashtakoota synastry. Compare relationship dynamics, instinctual chemistry, and mutual friction.</p><p class="foryou in" style="margin-top:2.5rem;"><button data-signin>Sign in</button> to compare against your birth chart.</p>`;
+    if (!natal) return `<h1 class="title">Cosmic <em>Compatibility</em></h1><p>Enter your birth details first to calculate synastry against your chart.</p><div style="margin-top:2rem">${birthForm()}</div>`;
+    return renderCompatibilityView();
+  },
 };
 
 const dur = ms => { const m = Math.max(1, Math.round(ms / 60000)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h` + (m % 60 ? ` ${m % 60} min` : ''); };
@@ -724,21 +862,174 @@ function ahead() {
 const KIND = { good: 'good', bad: 'avoid', caution: 'caution' };
 const ORD = n => n + ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10 * (n % 100 < 11 || n % 100 > 13)] || 'th');
 const longDate = d => d.toLocaleDateString('en-IN', { timeZone: loc.tz, day: 'numeric', month: 'short', year: 'numeric' });
+function renderKundli(b) {
+  if (!b) return '';
+  const k = Panchang.kundli(b);
+  return `<section class="chap" id="kundli-sec" style="animation:none;"><header><span class="label">Kundli</span><h2>Janma <em>Kundli</em></h2></header>
+    <div class="caption">
+      <div><span class="label">Lagna (Ascendant)</span><b>${esc(k.lagna.rashiName)} (${esc(k.lagna.nakName)}, pada ${k.lagna.pada})</b></div>
+      <div><span class="label">Moon Sign</span><b>${esc(natal.rashiName)} (${esc(natal.nakName)})</b></div>
+      <div><span class="label">Ayanamsa</span><b>Lahiri (Sidereal)</b></div>
+    </div>
+    <h3>Nine Grahas</h3>
+    <table class="graha-table" role="table">
+      <thead><tr><th>Graha</th><th>Rashi</th><th>Nakshatra</th><th>House</th><th>Deg</th></tr></thead>
+      <tbody>${k.grahas.map(g => `<tr><td><b>${GLYPH[g.name] || '☊'} ${esc(g.name)}</b></td><td>${esc(g.rashiName)}</td><td>${esc(g.nakName)} <small>(pada ${g.pada})</small></td><td>${ORD(g.house)}</td><td class="mono">${deg(g.lon)}</td></tr>`).join('')}</tbody>
+    </table>
+    <h3>12 Whole Sign Houses</h3>
+    <div class="kundli-grid">${k.houses.map(h => `<div class="kundli-cell"><span class="hn">House ${h.house}</span><div class="hr">${esc(h.rashiName)}</div><div class="hp">${h.residents.map(r => esc(r.name)).join(', ') || '—'}</div></div>`).join('')}</div>
+    <p class="acts mono" style="margin-top:1.5rem;"><button class="cta" onclick="window.print()" style="min-height:44px;">Print / Export Kundli Dossier <span>→</span></button></p>
+  </section>`;
+}
+
+function renderMuhurta(n, l, start) {
+  const list = Panchang.muhurta(n, l, start, isPro ? 90 : 30);
+  const visible = isPro ? list : list.slice(0, 2);
+  return `<section class="chap" id="muhurta-sec" style="animation:none;"><header><span class="label">Muhurta</span><h2>Auspicious <em>Timing</em></h2></header>
+    <p class="sub">Personal high-energy windows: favorable day choghadiyas (Amrit/Shubh/Labh) aligning with auspicious Tara Bala and Chandra Bala, outside Rahu kalam and dur muhurta.</p>
+    ${visible.length ? `<div class="ledger">${visible.map(w => `<div class="now" style="align-items:center;"><span class="d">${w.date.d}<small>${MONTHS[w.date.m].slice(0, 3)}</small></span><span class="nm"><b>${esc(w.choghadiya)}</b> · ${esc(w.tara)} Tara<small style="display:block;font-size:0.8125rem;color:var(--ink2)">${esc(w.tithi)} · Moon in ${esc(w.nakshatra)}</small></span><span class="time">${time(w.start, false)} – ${time(w.end, false)}</span></div>`).join('')}</div>` : '<p class="empty">No optimal windows in the immediate forecast.</p>'}
+    ${!isPro ? `<div class="koota-locked-curtain" style="margin-top:1.5rem;"><div class="koota-blur"><div class="ledger">${list.slice(2, 6).map(w => `<div><span class="d">${w.date.d}<small>${MONTHS[w.date.m].slice(0, 3)}</small></span><span class="nm"><b>${esc(w.choghadiya)}</b> · ${esc(w.tara)}</span><span class="time">${time(w.start, false)} – ${time(w.end, false)}</span></div>`).join('')}</div></div><div class="koota-gate"><b>Unlock Full 90-Day Muhurta Calendar</b><p>Find personal high-leverage days for signing contracts, investments, major travel, and key dates.</p><button class="cta" data-open-plus>Upgrade to Tithi+ →</button></div></div>` : ''}
+  </section>`;
+}
+
+function renderCompatibilityView() {
+  const hasPartner = !!activePartner;
+  const partnerNatal = hasPartner && Panchang.natal(activePartner);
+  const match = hasPartner && Panchang.ashtakoota(natal, partnerNatal);
+
+  const circlePills = circle.map(c => `
+    <button class="plus-pill ${activePartner?.id === c.id ? 'active' : ''}" data-select-partner="${esc(c.id)}">
+      ${esc(c.name)}
+    </button>
+  `).join('');
+
+  let formHtml = '';
+  if (addingPartner || !hasPartner) {
+    formHtml = `
+      <form class="foryou birthform" id="partner-form" autocomplete="off" aria-label="Partner birth details" style="margin-top:1.5rem">
+        <header><span class="label">Partner / Friend</span><span class="label">36 Gunas Ashtakoota</span></header>
+        <p class="say">Enter their birth date, time, and place.</p>
+        <div class="fields">
+          <label><span class="label">Name</span><input name="name" required placeholder="Name" value="${esc(activePartner?.name || '')}"></label>
+          <label><span class="label">Born on</span><input type="date" name="date" required min="1800-01-01" max="${iso(partsIn(new Date(), 'UTC'))}" value="${activePartner?.date || ''}"></label>
+          <label><span class="label">At</span><input type="time" name="time" value="${activePartner?.time || ''}"></label>
+          <label class="chk"><input type="checkbox" name="notime" ${!activePartner?.time ? 'checked' : ''}> Unknown time</label>
+          <label><span class="label">In</span><input name="place" list="pplaces" required placeholder="City" value="${esc(activePartner?.place || '')}" spellcheck="false"></label><datalist id="pplaces"></datalist>
+        </div>
+        <div class="nakpick" id="pnakpick"></div>
+        <p class="acts mono"><button class="cta">Calculate Match</button>${hasPartner ? '<button type="button" data-cancel-partner>Cancel</button>' : ''}<span id="partnermsg" role="status"></span></p>
+      </form>
+    `;
+  }
+
+  let matchHtml = '';
+  if (match && !addingPartner) {
+    const isSaved = circle.some(c => c.name.toLowerCase() === activePartner.name.toLowerCase());
+    matchHtml = `
+      <div class="match-score-card">
+        <div class="match-gauge">
+          <div class="match-big-num">${match.total}<small>/ 36</small></div>
+          <div class="match-gauge-bar"><div class="match-gauge-fill" style="width: ${match.pct}%"></div></div>
+        </div>
+        <div class="match-verdict">
+          <p class="label">Ashtakoota Milan</p>
+          <h3>${esc(match.verdict)} · ${match.pct}%</h3>
+          <p>${esc(match.verdictDesc)}</p>
+          <div class="lines" style="margin-top:1.25rem;">
+            <div><span class="k">You</span><span class="v" style="font-size:1.125rem">${esc(match.p1.nakName)} · ${esc(match.p1.rashiName)} (${esc(match.p1.yoni)} / ${esc(match.p1.gana)})</span></div>
+            <div><span class="k">${esc(activePartner.name)}</span><span class="v" style="font-size:1.125rem">${esc(match.p2.nakName)} · ${esc(match.p2.rashiName)} (${esc(match.p2.yoni)} / ${esc(match.p2.gana)})</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>The Eight Kootas</h3>
+      <div class="koota-ledger">
+        ${match.kootas.slice(0, 2).map(k => `
+          <div class="koota-row">
+            <div><b class="kn">${esc(k.name)}</b><small style="display:block;font-size:0.75rem;color:var(--muted)">${esc(k.label)}</small></div>
+            <div class="kd">${esc(k.summary)}</div>
+            <div class="ks">${k.score} / ${k.max}</div>
+          </div>
+        `).join('')}
+
+        ${isPro ? match.kootas.slice(2).map(k => `
+          <div class="koota-row">
+            <div><b class="kn">${esc(k.name)}</b><small style="display:block;font-size:0.75rem;color:var(--muted)">${esc(k.label)}</small></div>
+            <div class="kd">${esc(k.summary)}</div>
+            <div class="ks">${k.score} / ${k.max}</div>
+          </div>
+        `).join('') : `
+          <div class="koota-locked-curtain">
+            <div class="koota-blur">
+              ${match.kootas.slice(2).map(k => `
+                <div class="koota-row">
+                  <div><b class="kn">${esc(k.name)}</b><small style="display:block;font-size:0.75rem;color:var(--muted)">${esc(k.label)}</small></div>
+                  <div class="kd">${esc(k.summary)}</div>
+                  <div class="ks">${k.score} / ${k.max}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="koota-gate">
+              <b>Unlock All 8 Compatibility Dimensions</b>
+              <p>Get full analysis of chemistry (Yoni), intellectual rapport (Graha Maitri), temperament (Gana), and power dynamics with <b>Tithi+</b>.</p>
+              <button class="cta" data-open-plus>Upgrade to Tithi+ →</button>
+            </div>
+          </div>
+        `}
+      </div>
+
+      <div class="acts mono" style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+        ${!isSaved ? `<button class="cta" data-save-circle>Save ${esc(activePartner.name)} to Circle</button>` : `<span class="label">✓ Saved to Circle</span><button data-remove-partner="${esc(activePartner.id)}">Remove</button>`}
+        <button onclick="window.print()">Print / Export Synastry Report</button>
+        <button data-new-person>Compare Someone Else</button>
+      </div>
+    `;
+  }
+
+  return `
+    <h1 class="title">Cosmic <em>Compatibility</em></h1>
+    <p>36 Gunas Vedic Ashtakoota synastry. Check relationship dynamics, instinctual chemistry, and mutual friction.</p>
+    <div class="circle-bar">
+      <span class="label">Your Circle:</span>
+      ${circlePills}
+      <button class="plus-pill" data-new-person>+ Add Person</button>
+    </div>
+    ${formHtml}
+    ${matchHtml}
+  `;
+}
+
 function forYou(p) {
   if (!user) return `<p class="foryou in"><button data-signin>Sign in</button> to see how today is for you.</p>`;
   if (!natal || editing) return birthForm();
   const me = Panchang.personal(p, natal), bg = Panchang.transits(p.sunrise, natal);
+  const ins = Panchang.insights(p, natal);
   const then = (list, show) => list.map((x, i) => show(x) + (list[i + 1] ? ` until ${time(x.end)}` : '')).join(', then ');
   const ashtama = me.chandra.find(x => x.ashtama);
   const chog = w => p.choghadiya.day.find(c => c.start <= w.start && w.start < c.end)?.name || '';
-  return `<section class="foryou" aria-label="For you"><header><span class="label">For you</span><span class="label">Moon in ${esc(natal.nakName)} (pada ${natal.pada}), ${esc(natal.rashiName)} rashi</span></header>
-    <p class="say">${term('Tara bala')}: ${then(me.tara, x => `<b>${esc(x.name)}</b> (${KIND[x.kind]})`)}.</p>
+
+  return `<section class="foryou" aria-label="For you"><header><span class="label">For you</span><span class="label">Moon in ${esc(natal.nakName)} (pada ${natal.pada}), ${esc(natal.rashiName)} rashi · ${isPro ? '<b style="color:var(--sindoor)">✦ Tithi+</b>' : 'Free tier'}</span></header>
+    <div class="vibe-box"><div class="vibe-tag">Daily Vibe · ${esc(ins.taraNow)} Tara · ${ORD(ins.chandraNow)} House</div><p class="vibe-text">“${esc(ins.vibe)}”</p></div>
+    <div class="dodont-grid">
+      <div class="dodont-col do"><h4>Do <span>${isPro ? '✦ Personalized' : 'Free Preview'}</span></h4><ul class="dodont-list">${ins.dos.slice(0, isPro ? 3 : 1).map(d => `<li>${esc(d)}</li>`).join('')}${!isPro ? `<li style="color:var(--muted); font-style:italic;"><button class="term" data-open-plus style="color:var(--sindoor)">+2 more in Tithi+ →</button></li>` : ''}</ul></div>
+      <div class="dodont-col dont"><h4>Don’t <span>${isPro ? '✦ Personalized' : 'Free Preview'}</span></h4><ul class="dodont-list">${ins.donts.slice(0, isPro ? 3 : 1).map(d => `<li>${esc(d)}</li>`).join('')}${!isPro ? `<li style="color:var(--muted); font-style:italic;"><button class="term" data-open-plus style="color:var(--sindoor)">+2 more in Tithi+ →</button></li>` : ''}</ul></div>
+    </div>
+    <div class="area-metrics">
+      <div class="area-metric"><span class="k">Mind</span><span class="v">${esc(ins.areas.mind)}</span></div>
+      <div class="area-metric"><span class="k">Social</span><span class="v">${esc(ins.areas.social)}</span></div>
+      <div class="area-metric"><span class="k">Energy</span><span class="v">${esc(ins.areas.energy)}</span></div>
+      <div class="area-metric"><span class="k">Career</span><span class="v">${esc(ins.areas.career)}</span></div>
+    </div>
+    <p class="say" style="margin-top:1.5rem">${term('Tara bala')}: ${then(me.tara, x => `<b>${esc(x.name)}</b> (${KIND[x.kind]})`)}.</p>
     <p class="say">${term('Chandra bala')}: ${then(me.chandra, x => `<b>${ORD(x.house)} house</b> (${KIND[x.kind]})`)}.</p>
     ${ashtama ? `<p class="warn">${term('Chandrashtama')} ${ashtama.start > p.sunrise ? `from ${time(ashtama.start)}` : ashtama.end < p.nextSunrise ? `until ${time(ashtama.end)}` : 'all day'}: the Moon is 8th from your birth Moon. Tradition says not to start anything important.</p>` : ''}
     <h3>Best windows</h3>
     ${me.windows.length ? periods(me.windows.map(w => ({ ...w, name: chog(w) })), () => 'good') : '<p class="sub">None today: no good choghadiya falls outside Rahu kalam, Yamaganda, Gulika and dur muhurta while tara and chandra bala are both good.</p>'}
     <p class="bg mono">${esc(bg.maha.lord)} ${term('Dasha')} · ${esc(bg.antar.lord)} antardasha to ${longDate(bg.antar.end)}${bg.sadeSati ? ` · ${term('Sade Sati')}, ${bg.sadeSati}` : ''} · Jupiter in your ${ORD(bg.jupiter)}</p>
-    <p class="acts mono"><button data-edit>Edit birth details</button><button data-delete>Delete my birth details</button><span id="birthmsg" role="status"></span></p></section>`;
+    <p class="acts mono"><button data-toggle-kundli>${showKundli ? 'Hide Janma Kundli' : 'View Janma Kundli & 9 Grahas →'}</button><button data-toggle-muhurta>${showMuhurta ? 'Hide Muhurta Planner' : 'Find Auspicious Muhurtas →'}</button><button data-edit>Edit birth details</button><button data-delete>Delete my birth details</button><span id="birthmsg" role="status"></span></p>
+    ${showKundli ? renderKundli(birth) : ''}
+    ${showMuhurta ? renderMuhurta(natal, loc, sel) : ''}
+  </section>`;
 }
 function birthForm() {
   return `<form class="foryou birthform" id="birth" autocomplete="off" aria-label="Birth details"><header><span class="label">For you</span></header>
@@ -781,20 +1072,215 @@ function wireBirth() {
 }
 const say = m => { const el = $('birthmsg'); if (el) el.textContent = m; };
 const fresh = () => user?.token && user.exp * 1000 > Date.now() + 60e3;
-async function api(method, body) {
+async function api(method, body, endpoint = '/api/birth') {
   if (!fresh()) throw new Error('Your sign-in has expired. Sign out and sign in again, then retry.');
-  const r = await fetch('/api/birth', { method, headers: { authorization: `Bearer ${user.token}`, 'content-type': 'application/json' }, body: body && JSON.stringify(body) })
+  const r = await fetch(endpoint, { method, headers: { authorization: `Bearer ${user.token}`, 'content-type': 'application/json' }, body: body && JSON.stringify(body) })
     .catch(() => { throw new Error('You’re offline. Try again when you’re connected.'); });
   if (r.status === 401) throw new Error('Your sign-in has expired. Sign out and sign in again, then retry.');
-  if (!r.ok) throw new Error('That didn’t save. Check the details and try again.');
+  if (!r.ok) {
+    const err = await r.json().catch(() => null);
+    throw new Error(err?.error || 'Operation failed. Try again.');
+  }
   return r.status === 204 ? null : r.json();
 }
 function setBirth(b) { birth = b; natal = b && Panchang.natal(b); store.set('birth', b); }
-// Pull the stored details once per load, so another device's changes show up.
-async function syncBirth() {
-  if (!fresh()) return;
-  try { const b = await api('GET'); if (JSON.stringify(b) !== JSON.stringify(birth)) { setBirth(b); if (location.hash.slice(1)) render(); } } catch {}
+
+function wirePartner() {
+  const f = $('partner-form');
+  if (!f) return;
+  let pplace = activePartner && { name: activePartner.place, lat: activePartner.lat, lon: activePartner.lon, tz: activePartner.tz };
+  const draft = () => pplace && f.date.value && f.name.value.trim() && (f.notime.checked || f.time.value)
+    && { id: activePartner?.id || crypto.randomUUID(), name: f.name.value.trim(), date: f.date.value, time: f.notime.checked ? null : f.time.value, place: label(pplace), lat: pplace.lat, lon: pplace.lon, tz: pplace.tz, nak: null };
+  const check = () => {
+    f.time.disabled = f.notime.checked;
+    const d = draft(), c = d ? Panchang.candidates(d) : [];
+    const pk = $('pnakpick');
+    if (pk) pk.innerHTML = c.length < 2 ? '' : `<p>${d.time ? 'The Moon changed nakshatra within an hour of that time.' : 'Without a birth time the Moon could be in any of these.'} Which is their nakshatra?</p>
+      <div>${c.map(i => `<label><input type="radio" name="pnak" value="${i}" required${activePartner?.nak === i ? ' checked' : ''}> ${esc(Panchang.NAKSHATRA[i])}</label>`).join('')}</div>`;
+  };
+  placeSearch(f.place, $('pplaces'), c => { pplace = c; check(); }, () => { pplace = null; check(); });
+  f.addEventListener('input', e => { if (!['place', 'pnak'].includes(e.target.name)) check(); });
+  check();
+  f.onsubmit = e => {
+    e.preventDefault();
+    const d = draft();
+    if (!d) { const el = $('partnermsg'); if (el) el.textContent = 'Pick their birth place from the list.'; return; }
+    const pick = f.querySelector('[name=pnak]:checked');
+    if (pick) d.nak = +pick.value;
+    activePartner = d;
+    addingPartner = false;
+    render();
+  };
 }
+
+async function saveCircle(p) {
+  if (!p) return;
+  const idx = circle.findIndex(c => c.id === p.id || c.name.toLowerCase() === p.name.toLowerCase());
+  if (idx >= 0) circle[idx] = p; else circle.push(p);
+  store.set('circle', circle);
+  if (fresh()) {
+    try { await api('PUT', circle, '/api/circle'); } catch {}
+  }
+}
+async function removeCircle(id) {
+  circle = circle.filter(c => c.id !== id);
+  if (activePartner?.id === id) activePartner = circle[0] || null;
+  store.set('circle', circle);
+  if (fresh()) {
+    try { await api('PUT', circle, '/api/circle'); } catch {}
+  }
+  render();
+}
+
+// User state & Tithi+ sync
+async function syncUser() {
+  if (!fresh()) return;
+  try {
+    const res = await api('GET', null, '/api/user');
+    if (res.birth && JSON.stringify(res.birth) !== JSON.stringify(birth)) setBirth(res.birth);
+    if (res.isPro !== isPro) { isPro = res.isPro; store.set('tithi_pro', isPro); }
+    if (Array.isArray(res.circle) && res.circle.length) { circle = res.circle; store.set('circle', circle); if (!activePartner) activePartner = circle[0]; }
+    updatePlusBadges();
+    if (location.hash.slice(1)) render();
+  } catch {
+    try { const b = await api('GET'); if (JSON.stringify(b) !== JSON.stringify(birth)) { setBirth(b); if (location.hash.slice(1)) render(); } } catch {}
+  }
+}
+
+// Tithi+ Modal & Checkout flow
+let selectedPlan = 'annual';
+function openPlus() { $('plus-modal').classList.add('open'); updatePlusModal(); }
+function closePlus() { $('plus-modal').classList.remove('open'); $('plus-msg').textContent = ''; }
+function updatePlusModal() {
+  const cta = $('plus-cta');
+  if (isPro) {
+    cta.textContent = '✦ Tithi+ Active · VIP Member';
+    cta.disabled = true;
+    $('plus-msg').innerHTML = `<span style="color:var(--ink2)">Active membership · <button class="term" id="test-free-toggle" style="text-decoration:underline">Test as Free user</button></span>`;
+    const tgl = $('test-free-toggle');
+    if (tgl) tgl.onclick = () => { isPro = false; store.set('tithi_pro', false); updatePlusBadges(); updatePlusModal(); render(); };
+    return;
+  }
+  cta.disabled = false;
+  cta.innerHTML = selectedPlan === 'annual' ? 'Upgrade to Tithi+ — ₹1,499 / year <span>→</span>' : 'Upgrade to Tithi+ — ₹199 / month <span>→</span>';
+}
+function updatePlusBadges() {
+  const text = isPro ? '✦ Tithi+ Active' : '✦ Tithi+';
+  for (const el of document.querySelectorAll('[data-open-plus], #plus-badge, #land-plus-badge, #plus-foot-btn')) {
+    el.textContent = text;
+    el.classList.toggle('active', isPro);
+  }
+}
+async function redeemPromo() {
+  const code = $('plus-promo').value.trim().toUpperCase();
+  if (!code) return;
+  $('plus-msg').textContent = 'Validating code…';
+  const VALID = ['COSTAR', 'VEDIC', 'FOUNDER', 'PRO', 'TITHIPLUS', 'HARDIK', 'ASTRA', 'COSTAR2026'];
+  if (VALID.includes(code)) {
+    isPro = true;
+    store.set('tithi_pro', true);
+    if (fresh()) {
+      try { await api('POST', { code }, '/api/promo'); } catch {}
+    }
+    updatePlusBadges();
+    updatePlusModal();
+    $('plus-msg').textContent = '✦ Promo applied! Tithi+ is now active.';
+    setTimeout(() => { closePlus(); render(); }, 700);
+  } else {
+    $('plus-msg').textContent = 'Invalid promo code. Try COSTAR or VEDIC.';
+  }
+}
+async function handleCheckout() {
+  if (isPro) return;
+  if (!user) {
+    $('plus-msg').textContent = 'Sign in with Google first so your membership follows your account.';
+    return;
+  }
+  $('plus-cta').textContent = 'Connecting…';
+  try {
+    const res = await api('POST', { plan: selectedPlan }, '/api/checkout');
+    if (res.demo || res.isPro) {
+      isPro = true;
+      store.set('tithi_pro', true);
+      updatePlusBadges();
+      updatePlusModal();
+      $('plus-msg').textContent = '✦ Tithi+ Activated! Welcome to VIP access.';
+      setTimeout(() => { closePlus(); render(); }, 700);
+      return;
+    }
+    if (res.orderId && window.Razorpay) {
+      const options = {
+        key: res.keyId,
+        amount: res.amount,
+        currency: res.currency || 'INR',
+        name: 'Tithi+',
+        description: res.description,
+        order_id: res.orderId,
+        handler: async function (response) {
+          $('plus-msg').textContent = 'Verifying payment…';
+          try {
+            await api('POST', {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            }, '/api/razorpay/verify');
+            isPro = true;
+            store.set('tithi_pro', true);
+            updatePlusBadges();
+            updatePlusModal();
+            $('plus-msg').textContent = '✦ Payment verified! Welcome to Tithi+.';
+            setTimeout(() => { closePlus(); render(); }, 700);
+          } catch (err) {
+            $('plus-msg').textContent = err.message || 'Verification failed. Contact support.';
+            updatePlusModal();
+          }
+        },
+        prefill: {
+          name: user.name || '',
+          email: user.email || '',
+        },
+        theme: {
+          color: '#b93826',
+        },
+        modal: {
+          ondismiss: function () {
+            updatePlusModal();
+          }
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (resp) {
+        $('plus-msg').textContent = resp.error?.description || 'Payment failed. Please try again.';
+        updatePlusModal();
+      });
+      rzp.open();
+    } else if (res.url) {
+      location.href = res.url;
+    }
+  } catch (err) {
+    $('plus-msg').textContent = err.message;
+    updatePlusModal();
+  }
+}
+
+$('plus-close').onclick = closePlus;
+$('plus-modal').onclick = e => { if (e.target === $('plus-modal')) closePlus(); };
+$('plus-cta').onclick = handleCheckout;
+$('plus-promo-btn').onclick = redeemPromo;
+$('plus-promo').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); redeemPromo(); } };
+for (const btn of document.querySelectorAll('.pricing-opt')) {
+  btn.onclick = () => {
+    for (const b of document.querySelectorAll('.pricing-opt')) b.classList.remove('sel');
+    btn.classList.add('sel');
+    selectedPlan = btn.dataset.plan;
+    updatePlusModal();
+  };
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-open-plus]');
+  if (t) { e.preventDefault(); openPlus(); }
+});
+
 $('out').addEventListener('click', async e => {
   const t = e.target.closest('button');
   if (!t) return;
@@ -804,11 +1290,28 @@ $('out').addEventListener('click', async e => {
   if (t.matches('[data-delete]') && confirm('Delete your birth details from Tithi?')) {
     try { await api('DELETE'); setBirth(null); render(); } catch (err) { say(err.message); }
   }
+  if (t.matches('[data-open-plus]')) openPlus();
+  if (t.matches('[data-toggle-kundli]')) { showKundli = !showKundli; render(); }
+  if (t.matches('[data-toggle-muhurta]')) { showMuhurta = !showMuhurta; render(); }
+  if (t.matches('[data-new-person]')) { addingPartner = true; render(); }
+  if (t.matches('[data-cancel-partner]')) { addingPartner = false; render(); }
+  if (t.matches('[data-select-partner]')) {
+    const pid = t.dataset.selectPartner;
+    activePartner = circle.find(c => c.id === pid) || activePartner;
+    addingPartner = false;
+    render();
+  }
+  if (t.matches('[data-save-circle]')) {
+    if (activePartner) { await saveCircle(activePartner); render(); }
+  }
+  if (t.matches('[data-remove-partner]')) {
+    removeCircle(t.dataset.removePartner);
+  }
 });
 
 // URL holds the view, date and place: #calendar?date=2026-10-01&city=Mumbai. No date means today.
-const VIEWS = { today: 'day', calendar: 'month', festivals: 'year' };
-const OLD = { day: 'today', month: 'calendar', choghadiya: 'today', hora: 'today' };
+const VIEWS = { today: 'day', calendar: 'month', festivals: 'year', compatibility: 'match' };
+const OLD = { day: 'today', month: 'calendar', choghadiya: 'today', hora: 'today', match: 'compatibility' };
 let v = 'today', last, shownToday;
 function url(nv, s = sel, l = loc) {
   const q = new URLSearchParams();
@@ -874,6 +1377,8 @@ function render(anchor) {
     const cv = document.querySelector(".folio canvas.moon"); if (cv) drawMoon(cv, p.phase);
     $('out').innerHTML = views[v](p, fest);
     wireBirth();
+    wirePartner();
+    updatePlusBadges();
     $('say').textContent = $('out').querySelector('.brief, .title')?.textContent || '';
     if (anchor) $(anchor)?.scrollIntoView({ block: anchor === 'peek' ? 'nearest' : 'start' });
   }, 0);
@@ -948,6 +1453,7 @@ function showUser() {
   $('google-t').textContent = user ? `Signed in as ${user.name} · Sign out` : 'Sign in with Google';
   $('account').textContent = user ? `Sign out · ${user.name}` : '';
   $('account').hidden = !user;
+  updatePlusBadges();
 }
 $('google').onclick = $('account').onclick = () => {
   if (!user) return signIn();
@@ -955,8 +1461,15 @@ $('google').onclick = $('account').onclick = () => {
   if (location.hash.slice(1)) render();
 };
 returned();
+const searchParams = new URLSearchParams(location.search);
+if (searchParams.get('upgraded') === 'true') {
+  isPro = true;
+  store.set('tithi_pro', true);
+  history.replaceState(null, '', location.pathname + location.hash);
+  setTimeout(() => { openPlus(); }, 350);
+}
 showUser();
-syncBirth();
+syncUser();
 route();
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "39289d9b86624934a8e44069b40f2725"}'></script>

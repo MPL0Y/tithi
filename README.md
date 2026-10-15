@@ -4,17 +4,26 @@ Minimal Hindu panchang, after drikpanchang.com. Live at [tithi.agenticrabbit.com
 
 [![Tithi](og.png)](https://tithi.agenticrabbit.com)
 
-- **Landing page**: today's moon, tithi and nakshatra, with "Go to daily panchang" and "Sign in with Google".
+- **Landing page**: today's moon, tithi and nakshatra, with "Go to daily panchang", "✦ Tithi+" membership preview, and "Sign in with Google".
 - **Today**: summary line, what's coming up, five limbs (tithi, nakshatra, yoga, karana, vara), sun and moon times, good and bad hours, choghadiya, hora, moon phase, place in the year.
 - **Calendar**: month grid with tithi and festivals; tap a day to preview it.
 - **Festivals**: the year's observances, dated by the time of day each is kept (see "How this is worked out" at the foot of the page).
+- **Cosmic Compatibility (Ashtakoota Milan)**: 36 Gunas Vedic relationship matching across all 8 Kootas (Nadi, Bhakoot, Gana, Graha Maitri, Yoni, Tara, Vashya, Varna). Compare against friends and partners, save people to your Circle, and export synastry dossiers.
+- **For you & Janma Kundli** (signed in):
+  - **Daily Vibe**: blunt, editorial Co-Star style daily forecast, personal Do's & Don'ts, and real-time life area metrics (Mind, Social, Energy, Career) powered by Vedic Tara Bala and Chandra Bala.
+  - **Janma Kundli**: Sidereal Lahiri coordinates for Lagna (Ascendant) and all 9 Grahas (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) in 12 whole sign houses with printable dossier export.
+  - **Personal Muhurta Planner**: multi-week scan of optimal personal windows for career decisions, signing contracts, investments, travel, and dates.
+  - **Dasha & Transits**: Vimshottari Mahadasha/Antardasha timeline, Sade Sati phase, and Jupiter transits.
+- **Tithi+ Membership & Monetization**:
+  - ₹199 / month or ₹1,499 / year (~$4.99/mo or $39/yr) via **Razorpay** with full India support: UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards, and NetBanking.
+  - Paywall gates full 8-dimension Koota synastry, expanded 90-day Muhurta calendar, and complete daily Do/Don't directives.
+  - VIP Promo code support (`COSTAR`, `VEDIC`, `FOUNDER`, `PRO`, `TITHIPLUS`).
 - Any city (built-in list plus Open-Meteo search) or your location. Links like `#calendar?date=2026-10-01&city=Mumbai` are shareable.
 - Toggles at the foot of the page: theme (auto, light, dark), Hindi names, amanta or purnimanta months. They're stored in `localStorage`.
-- **For you** (signed in): from your birth date, time and place, how the day stands for you (tara bala, chandra bala, chandrashtama), your best windows, and your Vimshottari dasha, Sade Sati phase and Jupiter's house. Calendar days are tinted for chandrashtama and weak tara. Birth details are stored per Google account and can be deleted from the page.
 - Works offline and installs to the home screen.
 - Static festival pages for search: [/festivals/](https://tithi.agenticrabbit.com/festivals/) lists every festival's date across the built-in cities, for this year and next.
 
-Everything is calculated in the browser with [astronomy-engine](https://github.com/cosinekitty/astronomy) (loaded from jsDelivr). Sidereal positions use Lahiri (with precession and nutation). The only server code is `worker.js`, which stores birth details.
+Everything is calculated in the browser with [astronomy-engine](https://github.com/cosinekitty/astronomy) (loaded from jsDelivr). Sidereal positions use Lahiri (with precession and nutation). Server code is `worker.js`, which handles auth, user birth details, circle synastry, promo codes, and Razorpay payment orders & verification.
 
 ## Develop
 

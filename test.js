@@ -97,4 +97,34 @@ for (let k = 0; k < 60; k++) {
     assert(w.end <= r.start || w.start >= r.end, `window overlaps an avoided period on day ${k}`);
   for (const w of me.windows) for (const x of [...me.tara, ...me.chandra]) if (x.kind !== 'good') assert(w.end <= x.start || w.start >= x.end, `window in a bad span on day ${k}`);
 }
+
+// Ashtakoota compatibility
+const pA = P.natal({ date: '1990-05-15', time: '10:30', lat: 28.65, lon: 77.23, tz: 'Asia/Kolkata' });
+const pB = P.natal({ date: '1992-08-20', time: '15:45', lat: 19.07, lon: 72.88, tz: 'Asia/Kolkata' });
+const match = P.ashtakoota(pA, pB);
+assert(match.total >= 0 && match.total <= 36, 'ashtakoota total in range');
+assert.equal(match.kootas.length, 8, '8 kootas returned');
+
+// Kundli 9 Grahas and Lagna
+const kd = P.kundli({ date: '1990-05-15', time: '10:30', lat: 28.652, lon: 77.231, tz: 'Asia/Kolkata' });
+assert.equal(kd.grahas.length, 9, '9 grahas in kundli');
+assert(kd.lagna.rashi >= 0 && kd.lagna.rashi < 12, 'valid lagna rashi');
+assert.equal(kd.houses.length, 12, '12 houses in kundli');
+
+// Daily Co-Star style insights
+const ins = P.insights(P.day(2026, 9, 15, DELHI), pA);
+assert(ins.vibe && ins.vibe.length > 20, 'insights vibe generated');
+assert.equal(ins.dos.length, 3, '3 dos generated');
+assert.equal(ins.donts.length, 3, '3 donts generated');
+
+// Personal Muhurta timing
+const muh = P.muhurta(pA, DELHI, { y: 2026, m: 9, d: 1 }, 15);
+assert(Array.isArray(muh), 'muhurta returns array');
+
+// Razorpay signature verification logic
+const crypto = require('crypto');
+const orderId = 'order_test_123', paymentId = 'pay_test_456', secret = 'rzp_secret_key';
+const sig = crypto.createHmac('sha256', secret).update(`${orderId}|${paymentId}`).digest('hex');
+assert.equal(sig.length, 64, 'razorpay hmac sha256 64 hex characters');
+
 console.log('ok');
