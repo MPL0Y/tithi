@@ -415,6 +415,7 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <div class="ctas">
         <a class="cta" href="#today">Go to daily panchang <span aria-hidden="true">→</span></a>
         <button class="cta alt" id="google"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><b id="google-t" style="font-weight:400">Sign in with Google</b></button>
+        <button class="term" id="demo-reviewer" style="font-size:0.75rem; text-decoration:underline; color:var(--ink2); padding:0.25rem 0.5rem; margin-top:0.25rem;">Demo / Reviewer Login</button>
       </div>
     </div>
     <div class="orbit"><canvas id="orb" role="img" aria-label="Today’s moon"></canvas></div>
@@ -453,8 +454,8 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <details><summary>Is it accurate outside India?</summary><p>Everything is worked out for your city’s coordinates and time zone. Festival dates are checked against Drik Panchang for New Delhi (2025–2027) and London (2026).</p></details>
       <details><summary>Is it free? Does it work offline?</summary><p>It’s free, with no ads and no sign-up. After the first visit it works offline, and you can add it to your home screen from your browser’s share or menu button.</p></details>
     </section>
-    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button><button data-open-plus id="plus-foot-btn">✦ Tithi+</button><button id="account" hidden></button><a href="/festivals/">Festival dates by city</a>
-      <p class="made">Free · No ads · No sign-up · Works offline · <a href="https://github.com/MPL0Y/tithi">Open source</a>. Made by <a href="https://x.com/hardikksharmaaa">Hardik</a>. Not affiliated with Drik Panchang.</p></footer>
+    <footer class="colophon"><button id="system"></button><button id="theme"></button><button popovertarget="method">How this is worked out</button><button popovertarget="policies">Terms &amp; Policies</button><button data-open-plus id="plus-foot-btn">✦ Tithi+</button><button id="account" hidden></button><a href="/festivals/">Festival dates by city</a>
+      <p class="made">Free · No ads · No sign-up · Works offline · <a href="https://github.com/MPL0Y/tithi">Open source</a>. Made by <a href="https://x.com/hardikksharmaaa">Hardik</a> · <a href="mailto:support@agenticrabbit.com">support@agenticrabbit.com</a>. Not affiliated with Drik Panchang.</p></footer>
     <div popover id="method" class="note wide">
       <b>How this is worked out</b>
       <p>Everything is calculated in your browser for the place you pick. Nothing is looked up from tables. Visits are counted with Cloudflare Web Analytics, which sets no cookies. Signing in with Google is optional; it keeps your birth details for the For you section.</p>
@@ -474,6 +475,23 @@ if (!location.hash.slice(1)) document.documentElement.dataset.landing = ''; // n
       <h3>Compatibility &amp; Synastry</h3>
       <p>Vedic Ashtakoota evaluates 36 Gunas across eight dimensions: Varna (ego alignment, 1 pt), Vashya (magnetic pull, 2 pts), Tara (karmic longevity, 3 pts), Yoni (instinct &amp; physical chemistry, 4 pts), Graha Maitri (mental rapport, 5 pts), Gana (temperament, 6 pts), Bhakoot (emotional resonance, 7 pts), and Nadi (biological constitution, 8 pts). Scores above 18 indicate workable affinity; 28+ denotes rare cosmic alignment.</p>
       <p>These dates match Drik Panchang for New Delhi across 2025–2027 and for London in 2026, with one exception: in 2026 Drik moves Holika Dahan and Holi a day later for Delhi, most likely because of that evening’s lunar eclipse. Eclipses, bhadra timings, regional customs and nakshatra conditions are not modelled, so a family or temple calendar can differ by a day. When it matters, check with them.</p>
+    </div>
+    <div popover id="policies" class="note wide">
+      <b>Terms &amp; Policies</b>
+      <p>Tithi (tithi.agenticrabbit.com) is an astrological software and Vedic panchang calculation service developed by Hardik Sharma (Agentic Rabbit). Customer Support: <a href="mailto:support@agenticrabbit.com">support@agenticrabbit.com</a>.</p>
+      <h3>1. Services &amp; Digital Products</h3>
+      <p>Tithi provides computational astronomical and Vedic services, daily astrological transits, Janma Kundli calculations, and Ashtakoota compatibility synastry reports. The daily panchang, monthly calendar, and festivals are free. Advanced relationship compatibility analysis, 90-day Muhurta timing, and full daily directives are offered via the "Tithi+" membership (₹199 / month or ₹1,499 / year).</p>
+      <h3>2. Instant Digital Delivery</h3>
+      <p>All services and memberships on this platform are 100% digital goods delivered and activated immediately online in the browser upon successful payment confirmation. No physical products or shipments are involved.</p>
+      <h3>3. Cancellation &amp; Refund Policy</h3>
+      <p>Subscriptions may be cancelled anytime by the user. If you experience an accidental duplicate payment, technical failure, or service disruption, please contact <a href="mailto:support@agenticrabbit.com">support@agenticrabbit.com</a> within 7 days. Verified refund requests are credited back to the original payment source within 5–7 business days via Razorpay.</p>
+      <h3>4. Privacy Policy</h3>
+      <p>We respect your privacy. User birth data (date, time, location) is collected strictly to compute sidereal astrological positions and is stored securely. We do not sell or share personal information. Payment transactions are processed directly by Razorpay (PCI-DSS compliant); we never store your debit/credit card numbers or UPI PINs.</p>
+      <h3>5. Contact Us</h3>
+      <p>Operator: Hardik Sharma (Agentic Rabbit)<br>
+      Email: <a href="mailto:support@agenticrabbit.com">support@agenticrabbit.com</a><br>
+      Website: <a href="https://tithi.agenticrabbit.com">https://tithi.agenticrabbit.com</a><br>
+      Location: New Delhi, India</p>
     </div>
     <div id="plus-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="plus-title">
       <div class="modal-card">
@@ -1449,10 +1467,23 @@ function returned() { // #state=…&id_token=… or #state=…&error=…
   } catch {}
   history.replaceState(null, '', location.pathname + (user ? '#today' : ''));
 }
+function loginReviewer() {
+  store.set('user', user = { name: 'Razorpay Reviewer', email: 'reviewer@tithi.agenticrabbit.com', token: 'reviewer-demo-token', exp: Math.floor(Date.now() / 1000) + 86400 * 365 });
+  if (!birth) setBirth({ date: '1995-05-15', time: '10:30', place: 'New Delhi, India', lat: 28.6139, lon: 77.2090, tz: 'Asia/Kolkata', nak: 3 });
+  if (!circle.length) {
+    circle = [{ id: 'sample-p1', name: 'Partner (Priya)', date: '1996-08-20', time: '14:15', place: 'Mumbai, India', lat: 19.0760, lon: 72.8777, tz: 'Asia/Kolkata', nak: 10 }];
+    store.set('circle', circle);
+    activePartner = circle[0];
+  }
+  showUser();
+  if (location.hash.slice(1)) render();
+}
 function showUser() {
   $('google-t').textContent = user ? `Signed in as ${user.name} · Sign out` : 'Sign in with Google';
   $('account').textContent = user ? `Sign out · ${user.name}` : '';
   $('account').hidden = !user;
+  const demoRev = $('demo-reviewer');
+  if (demoRev) demoRev.style.display = user ? 'none' : '';
   updatePlusBadges();
 }
 $('google').onclick = $('account').onclick = () => {
@@ -1460,8 +1491,13 @@ $('google').onclick = $('account').onclick = () => {
   store.set('user', user = null); setBirth(null); showUser();
   if (location.hash.slice(1)) render();
 };
+const demoRev = $('demo-reviewer');
+if (demoRev) demoRev.onclick = () => { loginReviewer(); go('today'); };
 returned();
-const searchParams = new URLSearchParams(location.search);
+const searchParams = new URLSearchParams(location.search || (location.hash.includes('?') ? location.hash.split('?')[1] : ''));
+if (searchParams.get('reviewer') === 'true') {
+  loginReviewer();
+}
 if (searchParams.get('upgraded') === 'true') {
   isPro = true;
   store.set('tithi_pro', true);
